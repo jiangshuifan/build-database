@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="visible" title="Tips" width="40%" :before-close="handleClose">
+  <el-dialog v-model="visible" title="Tips" width="40%" :before-close="handleCancel">
     <el-form v-model="fields">
       <el-form-item v-for="item in formConfig" :label="item.label">
         <el-input v-if="item.eType === 'input'" v-model="fields[item.field]" v-bind="item.props" />
@@ -51,15 +51,6 @@ const data = reactive({
 const { visible, formConfig, fields } = toRefs(data)
 const emits = defineEmits(['close', 'save'])
 
-const handleClose = (done: () => void) => {
-  ElMessageBox.confirm('Are you sure to close this dialog?')
-    .then(() => {
-      done()
-    })
-    .catch(() => {
-      // catch error
-    })
-}
 const handleCancel = function () {
   emits('close')
 }
