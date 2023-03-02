@@ -1,0 +1,30 @@
+{
+  "name": "f-serve",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon src/index.js",
+    "reset:db": "node build/reset-db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "camel-case": "^4.1.2",
+    "dotenv": "^10.0.0",
+    "koa": "^2.13.4",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.1.1",
+    "koa-static": "^5.0.0",
+    "koa2-cors": "^2.0.6",
+    "puppeteer": "^19.7.1",
+    "puppeteer-core": "^19.7.1",
+    "sequelize": "^6.25.2",
+    "sqlite3": "^5.1.2",
+    "ws": "^8.4.0"
+  },
+  "devDependencies": {
+    "json-templater": "^1.2.0"
+  }
+}
