@@ -32,17 +32,17 @@
               </el-icon></el-button>
             <el-button text><el-icon>
                 <EditPen />
-                                        </el-icon></el-button>
-                                    </div>                                                                                                                      </el-card> -->
+                                                                      </el-icon></el-button>
+                                                                  </div>                                                                                                                      </el-card> -->
       <div v-for="table in tables" @click="() => { handleViewTable(table.name) }" class="table-item">
         <div>{{ table.name }}</div>
-        <el-button style="margin-left: auto;" text><el-icon>
+        <el-button @click.stop="() => { handleOpenTableDesign(table) }" style="margin-left: auto;" text><el-icon>
             <Brush />
           </el-icon></el-button>
-        <el-button @click="() => { handleDeleteTable(table.name) }" text><el-icon>
+        <el-button @click.stop="() => { handleDeleteTable(table.id) }" text><el-icon>
             <DeleteFilled />
           </el-icon></el-button>
-        <el-button @click="() => { handleOpenForm('edit', table) }" text><el-icon>
+        <el-button @click.stop="() => { handleOpenForm('edit', table) }" text><el-icon>
             <Edit />
           </el-icon></el-button>
       </div>
@@ -62,7 +62,7 @@ import { getFieldTypes } from "../../api/index"
 import { DatabaseTable, dbField, tableFieldColumnList } from '../../database'
 import { formConfigItem, formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
-import Table from "../../components/table.vue"
+import Table from "../../components/dialog-table.vue"
 
 import { useRouter } from "vue-router"
 //pinia
@@ -103,10 +103,11 @@ const handleOpenForm = function (type: 'add' | 'edit', data?: any) {
   pageData.formType = type
   if (type === 'edit') {
     pageData.formData = data
-
-  } else {
-
   }
+}
+const handleOpenTableDesign = function (table: DatabaseTable) {
+  showTableFieldDialog.value = true
+  data.selectedTableData = table.fields
 }
 //拿到字段类型字典
 const handleGetFeildTypes = async function () {
@@ -143,8 +144,21 @@ const handleRedirectToCharts = function () {
   })
 }
 
-const handleViewTable = function (data: string | number) { }
-const handleDeleteTable = function (data: string | number) { }
+const handleViewTable = function (table: string) {
+  $router.push({
+    name: 'tableData',
+    params: {
+      database: databaseId,
+      table: table
+    }
+  })
+}
+const handleDeleteTable = function (id: string | number) {
+  const index = store.tables.findIndex(tb => {
+    return tb.id === id
+  })
+  store.tables.splice(index, 1)
+}
 const handleEditTable = function (data: DatabaseTable) {
   pageData.formType = "edit"
   showEditTableDialog.value = true

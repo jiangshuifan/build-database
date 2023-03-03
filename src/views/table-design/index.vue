@@ -34,8 +34,8 @@
                 <EditPen />
               </el-icon></el-button>
           </div>
-                            </div>
-                          </el-card> -->
+                                </div>
+                              </el-card> -->
     </el-main>
   </el-container>
   <Form v-model="showTableDialog" @close="() => { showTableDialog = false }" @save="handleCreateNewTable"
@@ -52,7 +52,7 @@ import { getFieldTypes } from "../../api/index"
 import { DatabaseTable, dbField, tableFieldColumnList } from '../../database'
 import { formConfigItem, formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
-import Table from "../../components/table.vue"
+import Table from "../../components/dialog-table.vue"
 interface dbTableData {
   tables: DatabaseTable[],
 }
@@ -74,7 +74,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'projects', name: '项目', type: 'string' },
         { field: 'work_experience', name: '工作经历', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('experience',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -86,7 +86,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('school',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -98,7 +98,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('project',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -110,7 +110,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('table1',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -122,7 +122,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('table2',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -134,7 +134,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
     new DatabaseTable('table3',
       [
         { field: 'username', name: '用户名', type: 'string' },
@@ -146,7 +146,7 @@ const dbTableData = reactive<dbTableData>({
         { field: 'education', name: '教育经历', type: 'string' },
         { field: 'projects', name: '项目', type: 'string' },
 
-      ], 'tel'),
+      ], []),
   ]
 })
 let showTableDialog = ref(false)

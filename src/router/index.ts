@@ -16,6 +16,11 @@ const routes: Array<RouteRecordRaw> = [
     path: '/:database/relation',
     component: () => import('../views/table-relation/index.vue')
   },
+  {
+    name: 'tableData',
+    path: '/:database/:table/data',
+    component: () => import('../views/table-data/index.vue')
+  },
 ]
 const router = createRouter({
   history: createWebHistory(),
