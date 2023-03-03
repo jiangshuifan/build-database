@@ -10,8 +10,15 @@ export interface formConfigItem {
 
 
 export class formConfig {
-  initDBConfig: formConfigItem[] = [{ eType: 'input', field: 'name', label: '数据库名称', props: { placeholder: "输入数据库名称" } }]
-  initTableConfig: formConfigItem[] = [{ eType: 'input', field: 'name', label: '表格名称', props: { placeholder: "输入表格名称" } }]
+  initDBConfig: formConfigItem[] = [
+    { eType: 'input', field: 'name', label: '数据库名称', props: { placeholder: "输入数据库名称" } },
+    {
+      eType: 'select', field: 'type', label: '数据库类型', data: formatFieldArrToDic(['Postgres', 'MySQL', 'MariaDB', 'SQLite', 'MicrosoftSQLServe']), props: { placeholder: "选择数据库类型" }
+    },
+  ]
+  initTableConfig: formConfigItem[] = [
+    { eType: 'input', field: 'name', label: '表格名称', props: { placeholder: "输入表格名称" } },
+  ]
   initFieldsConfig: formConfigItem[] = [
     { eType: 'input', field: 'field', label: '字段名称', props: { placeholder: "输入字段名称" } },
     { eType: 'input', field: 'name', label: '备注', props: { placeholder: "输入备注名" } },
@@ -20,3 +27,10 @@ export class formConfig {
     }]
   selectedTableData: dbField[] = []
 }
+
+const formatFieldArrToDic = function (array: any) {
+  return array.reduce((prev: any, v: any) => {
+    prev.push({ id: v, value: v, label: v })
+    return prev
+  }, [])
+} 

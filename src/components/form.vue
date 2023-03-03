@@ -22,9 +22,9 @@
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="handleCancel">Cancel</el-button>
+        <el-button @click="handleCancel">取消</el-button>
         <el-button type="primary" @click="handleConfirm">
-          Confirm
+          确定
         </el-button>
       </span>
     </template>
@@ -32,30 +32,50 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, reactive } from "vue"
+import { toRefs, reactive, watch, computed } from "vue"
 import { getFieldObject } from "../utils/func"
-import { ElMessageBox } from 'element-plus';
 import { formConfigItem } from "../interface/form"
+let props = withDefaults(defineProps<{
+  value?: boolean,
+  config?: formConfigItem[],
+  type?: 'add' | 'edit',
+  data?: { [property: string]: any }
+}>(), {
+  value: false,
+  type: 'add',
+  data: () => { return {} },
+  config: () => { return [] }
+})
+//最初没有将fieldsObject设置为响应式，导致响应式丢失,但使用computed会无法直接修改值
+let fieldsObject = reactive(getFieldObject(props.config, 'field'))
 
-const { value = false, config = [] } = defineProps<{
-  value?: Boolean,
-  config?: formConfigItem[]
-}>()
-const fieldsObject = getFieldObject(config, 'field')
-const data = reactive({
-  visible: value,
-  formConfig: config,
+watch(() => [props.type, props.data], () => {
+  if (props.type === 'edit') {
+    Object.keys(props.data).forEach(property => {
+      fieldsObject[property] = props.data[property]
+    })
+  } else {
+    let init = getFieldObject(props.config, 'field')
+    Object.keys(init).forEach(property => {
+      fieldsObject[property] = init[property]
+    })
+  }
+  console.log(fieldsObject)
+  console.log(reactiveData.fields)
+})
+const reactiveData = reactive({
+  visible: props.value,
+  formConfig: props.config,
   fields: fieldsObject
 })
-
-const { visible, formConfig, fields } = toRefs(data)
+const { visible, formConfig, fields } = toRefs(reactiveData)
 const emits = defineEmits(['close', 'save'])
 
 const handleCancel = function () {
   emits('close')
 }
 const handleConfirm = function () {
-  emits('save', { data: data.fields })
+  emits('save', reactiveData.fields)
 }
 </script>
 

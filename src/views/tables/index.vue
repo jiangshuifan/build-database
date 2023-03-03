@@ -3,9 +3,9 @@
 <template>
   <el-container style="flex-direction: column;height:100%">
     <el-header style="display:flex;align-items:center">
-      <el-button @click="() => { showTableDialog = true }">新建表格</el-button>
-      <el-button>生成数据库</el-button>
+      <el-button @click="() => { handleOpenForm('add') }">新建表格</el-button>
       <el-button @click="handleGetFeildTypes">测试</el-button>
+      <el-button @click="handleRedirectToCharts">表格关系</el-button>
     </el-header>
   <el-main style="flex: 1;">
     <!-- <el-card v-for="table in tables" class="database-card">
@@ -32,15 +32,24 @@
               </el-icon></el-button>
             <el-button text><el-icon>
                 <EditPen />
-              </el-icon></el-button>
-          </div>
-            </div>
-          </el-card> -->
-      <Echart :option="option"></Echart>
+                                        </el-icon></el-button>
+                                    </div>                                                                                                                      </el-card> -->
+      <div v-for="table in tables" @click="() => { handleViewTable(table.name) }" class="table-item">
+        <div>{{ table.name }}</div>
+        <el-button style="margin-left: auto;" text><el-icon>
+            <Brush />
+          </el-icon></el-button>
+        <el-button @click="() => { handleDeleteTable(table.name) }" text><el-icon>
+            <DeleteFilled />
+          </el-icon></el-button>
+        <el-button @click="() => { handleOpenForm('edit', table) }" text><el-icon>
+            <Edit />
+          </el-icon></el-button>
+      </div>
     </el-main>
   </el-container>
-  <Form v-model="showTableDialog" @close="() => { showTableDialog = false }" @save="handleCreateNewTable"
-    :config="initTableConfig"></Form>
+  <Form v-model="showTableDialog" @close="() => { showTableDialog = false }" :type="pageData.formType"
+    :data="pageData.formData" @save="handleSave" :config="initTableConfig"></Form>
   <Form v-model="showFieldDialog" @close="() => { showFieldDialog = false }" @save="handleCreateNewField"
     :config="initFieldsConfig">
   </Form>
@@ -54,102 +63,102 @@ import { DatabaseTable, dbField, tableFieldColumnList } from '../../database'
 import { formConfigItem, formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
 import Table from "../../components/table.vue"
-import Echart from "../../components/echarts.vue"
-import { outPutOption, getGraphNodes } from "../../utils/format-data/graph-nodes"
 
-interface dbTableData {
-  tables: DatabaseTable[],
+import { useRouter } from "vue-router"
+//pinia
+import { useDBStore } from "../../store"
+import { storeToRefs } from "pinia"
+
+interface pageInterface {
+  formType: 'add' | 'edit',
+  formData: { [property: string]: any }
 }
+
+const store = useDBStore()
+const $router = useRouter()
+
+const pageData = reactive<pageInterface>({
+  formType: 'add',
+  formData: {}
+})
+
+const databaseId: number | string = parseInt($router.currentRoute.value.params.database as string)
+const { database, tables } = storeToRefs(store)
+const dbInd = database.value.findIndex(db => {
+  return db.id === databaseId
+})
+store.tables = database.value[dbInd].tables
+
 const data = reactive(new formConfig())
 let { initTableConfig, initFieldsConfig, selectedTableData } = toRefs(data)
-let fieldTypeData: any
 
-const dbTableData = reactive<dbTableData>({
-  tables: [
-    new DatabaseTable('User',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-        { field: 'work_experience', name: '工作经历', type: 'string' },
-
-      ], 'tel'),
-    new DatabaseTable('Table',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], 'tel'),
-  ]
-})
-const option = outPutOption(getGraphNodes(dbTableData.tables))
 let showTableDialog = ref(false)
+let showEditTableDialog = ref(false)
 let showTableFieldDialog = ref(false)
 let showFieldDialog = ref(false)
 
+
+const handleOpenForm = function (type: 'add' | 'edit', data?: any) {
+  showTableDialog.value = true
+  pageData.formType = type
+  if (type === 'edit') {
+    pageData.formData = data
+
+  } else {
+
+  }
+}
 //拿到字段类型字典
 const handleGetFeildTypes = async function () {
   return await getFieldTypes('mysql')
 }
-const handleCreateNewTable = function (data: any) {
+const handleSave = function (data: any) {
   showTableDialog.value = false
+  console.log(data)
+  if (pageData.formType === 'edit') {
+    store.tables.forEach((tb, i, tbs) => {
+      if (tb.id === data.id) {
+        tbs[i].name = data.name
+      }
+    })
+  } else {
+    database.value[dbInd].tables.push(new DatabaseTable(data.name, []))
+  }
 }
 const handleCreateNewField = function (data: any) {
   showFieldDialog.value = false
-  console.log(data)
+  pageData.formType = "add"
 }
 const handleSaveTableFields = function (data: any) {
   showTableFieldDialog.value = false
   console.log(data)
 }
-//新建字段
-const handleOpenFieldCreateDialog = async function () {
-  fieldTypeData = await handleGetFeildTypes()
-  data.initFieldsConfig.forEach((item, ind, arr) => {
-    if (item.field === "type") {
-      arr[ind].data = fieldTypeData
+
+const handleRedirectToCharts = function () {
+  $router.push({
+    name: 'tablesRelation',
+    params: {
+      database: databaseId
     }
   })
-  showFieldDialog.value = true
 }
-//打开表格设计字段弹窗
-const handleOpenTableFieldEditDialog = function (arr: dbField[]) {
-  showTableFieldDialog.value = true
-  data.selectedTableData = arr
+
+const handleViewTable = function (data: string | number) { }
+const handleDeleteTable = function (data: string | number) { }
+const handleEditTable = function (data: DatabaseTable) {
+  pageData.formType = "edit"
+  showEditTableDialog.value = true
+  pageData.formData = data
 }
 </script>
 <style lang="scss" scoped>
-.database-card {
-  width: 300px;
-  display: inline-block;
+.table-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
 
-  :deep(.el-card__body) {
-    padding: 0
-  }
-
-  .card-header {
-    display: flex;
-  }
-
-  .card-field {
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      background-color: rgb(219, 219, 219);
-    }
+  &:hover {
+    background-color: rgba(230, 230, 230, 0.6);
   }
 }
 </style>

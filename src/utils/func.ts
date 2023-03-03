@@ -3,7 +3,7 @@ export const getFieldLists = function (array: any, field: any) {
 }
 
 export const getFieldObject = function (array: any, field: string) {
-  return array.reduce((preV: any, value: any) => {
+  return array.reduce((preV: { [property: string]: any }, value: any) => {
     if (Object.hasOwn(preV, value[field])) {
       console.log(array, field, preV)
       throw new Error(`字段${field}重复`)

@@ -1,3 +1,4 @@
+let dbinstance = 1
 let instance = 1
 
 type dbType = 'Postgres' | 'MySQL' | 'MariaDB' | 'SQLite' | 'MicrosoftSQLServe'
@@ -26,19 +27,25 @@ export class DatabaseTable {
     this.fields = fields
     if (marjorKey) this.marjorKey = marjorKey
     if (foreignKey) this.foreignKey = foreignKey
+    instance += 1
+    this.id = "table_" + instance
   }
-  name = "table_" + instance
+  id = "table_" + instance
+  name = "tableName"
   fields: dbField[] = []
   marjorKey: string = ""
   foreignKey: string[] = []
 }
 
 export class Database {
-  constructor(name?: string, type?: dbType) {
+  constructor(name?: string, type?: dbType, tables?: DatabaseTable[]) {
     if (name) this.name = name
     if (type) this.type = type
+    if (tables) this.tables = tables
+    dbinstance += 1
   }
-  name = "database" + instance
+  id = dbinstance
+  name = "database" + dbinstance
   type: dbType = 'MySQL'
   tables: DatabaseTable[] = []
 }

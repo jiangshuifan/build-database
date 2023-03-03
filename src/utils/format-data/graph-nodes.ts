@@ -55,7 +55,7 @@ export const getGraphNodes = function (tables: DatabaseTable[], radius: number =
     let centerId = instance + i
     let fieldsNum = v.fields.length
     let gap = 2 * Math.PI / fieldsNum
-    let centerX = 50 * (ind + 1)
+    let centerX = 50 * (Math.floor(ind % 4) + 1)
     let centerY = 50 * (Math.floor(ind / 4) + 1)
 
     const nodes = [
