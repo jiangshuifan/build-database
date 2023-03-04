@@ -32,11 +32,11 @@
               </el-icon></el-button>
             <el-button text><el-icon>
                 <EditPen />
-                                                                      </el-icon></el-button>
-                                                                  </div>                                                                                                                      </el-card> -->
+                                                                              </el-icon></el-button>
+                                                                          </div>                                                                                                                      </el-card> -->
       <div v-for="table in tables" @click="() => { handleViewTable(table.name) }" class="table-item">
         <div>{{ table.name }}</div>
-        <el-button @click.stop="() => { handleOpenTableDesign(table) }" style="margin-left: auto;" text><el-icon>
+        <el-button @click.stop="() => { handleOpenTableDesign(table.name) }" style="margin-left: auto;" text><el-icon>
             <Brush />
           </el-icon></el-button>
         <el-button @click.stop="() => { handleDeleteTable(table.id) }" text><el-icon>
@@ -105,9 +105,14 @@ const handleOpenForm = function (type: 'add' | 'edit', data?: any) {
     pageData.formData = data
   }
 }
-const handleOpenTableDesign = function (table: DatabaseTable) {
-  showTableFieldDialog.value = true
-  data.selectedTableData = table.fields
+const handleOpenTableDesign = function (table: string | number) {
+  $router.push({
+    name: 'tableDesign',
+    params: {
+      database: databaseId,
+      table: table
+    }
+  })
 }
 //拿到字段类型字典
 const handleGetFeildTypes = async function () {
@@ -158,11 +163,6 @@ const handleDeleteTable = function (id: string | number) {
     return tb.id === id
   })
   store.tables.splice(index, 1)
-}
-const handleEditTable = function (data: DatabaseTable) {
-  pageData.formType = "edit"
-  showEditTableDialog.value = true
-  pageData.formData = data
 }
 </script>
 <style lang="scss" scoped>

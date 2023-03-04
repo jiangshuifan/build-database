@@ -23,6 +23,7 @@ export const outPutOption = function (graph: iGraph) {
         links: graph.links,
         categories: graph.categories,
         roam: true,
+        draggable: false,
         label: {
           show: true,
           position: 'right',

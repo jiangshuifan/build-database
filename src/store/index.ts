@@ -34,16 +34,13 @@ const tables = [new DatabaseTable('User',
     { field: 'projects', name: '项目', type: 'string' },
     { field: 'work_experience', name: '工作经历', type: 'string' },
 
-  ], [
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-  { username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' },
-]),
+  ], (() => {
+    let arr = []
+    for (let i = 0; i < 100; i++) {
+      arr.push({ username: '于未然', tel: '173780911286', email: 'gaojiale_mail@qq.com', github: "https://github.com/jiangshuifan", headicon: "暂无", position: '前端开发', education: '南华大学·物流工程', projects: '很多', work_experience: '北科博研前端开发' })
+    }
+    return arr
+  })()),
 new DatabaseTable('experience',
   [
     { field: 'username', name: '用户名', type: 'string' },

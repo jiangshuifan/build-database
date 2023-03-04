@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <Table :columns="columns" :table-data="tbData"></Table>
+  <div style="height: 100%;overflow: auto;">
+    <Table style="height: 100%;" :columns="columns" :table-data="tbData"></Table>
   </div>
 </template>
 

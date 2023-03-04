@@ -3,48 +3,30 @@
 <template>
   <el-container style="flex-direction: column;height:100%">
     <el-header style="display:flex;align-items:center">
-      <el-button @click="() => { showTableDialog = true }">新建表格</el-button>
-      <el-button>生成数据库</el-button>
-      <el-button @click="handleGetFeildTypes">测试</el-button>
+      <el-button @click="() => { handleOpenDialog('add') }">新建字段</el-button>
     </el-header>
-  <el-main style="flex: 1;">
-    <!-- <el-card v-for="table in tables" class="database-card">
-        <template #header>
-          <div class="card-header">
-            <span>{{ table.name }}</span>
-            <el-button @click="() => { handleOpenTableFieldEditDialog(table.fields) }" style="margin-left:auto ;"
-              text><el-icon>
+    <el-main style="flex: 1;">
+      <el-table :data="selectedTableData" style="width: 100%">
+        <el-table-column v-for="column in tableFieldColumnList" header-align="center" align="center" :prop="column.field"
+          :label="column.title"></el-table-column>
+        <el-table-column header-align="center" align="center">
+          <template #default="scoped">
+            <el-button @click="() => { handleOpenDialog('edit', scoped.row) }" text><el-icon>
                 <Edit />
               </el-icon></el-button>
-            <el-button @click="handleOpenFieldCreateDialog" text><el-icon>
-                <Plus />
-              </el-icon></el-button>
-            <el-button text><el-icon>
+            <el-button @click="() => {
+              handleRemoveField(scoped.row.field)
+            }" text><el-icon>
                 <DeleteFilled />
               </el-icon></el-button>
-          </div>
-        </template>
-        <div v-for="field in table.fields" class="card-field">
-          <div>{{ field.name }}</div>
-          <div style="margin-left:auto">
-            <el-button text><el-icon>
-                <CloseBold />
-              </el-icon></el-button>
-            <el-button text><el-icon>
-                <EditPen />
-              </el-icon></el-button>
-          </div>
-                                </div>
-                              </el-card> -->
+          </template>
+        </el-table-column>
+      </el-table>
     </el-main>
   </el-container>
-  <Form v-model="showTableDialog" @close="() => { showTableDialog = false }" @save="handleCreateNewTable"
-    :config="initTableConfig"></Form>
-  <Form v-model="showFieldDialog" @close="() => { showFieldDialog = false }" @save="handleCreateNewField"
-    :config="initFieldsConfig">
+  <Form v-model="showFieldDialog" @close="() => { showFieldDialog = false }" :type="pageData.formType"
+    :data="pageData.formData" @save="handleSave" :config="initFieldsConfig">
   </Form>
-  <Table v-model="showTableFieldDialog" @close="() => { showTableFieldDialog = false }" :table-data="selectedTableData"
-    @save="handleSaveTableFields" :columns="tableFieldColumnList"></Table>
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, computed } from "vue"
@@ -52,137 +34,76 @@ import { getFieldTypes } from "../../api/index"
 import { DatabaseTable, dbField, tableFieldColumnList } from '../../database'
 import { formConfigItem, formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
-import Table from "../../components/dialog-table.vue"
-interface dbTableData {
-  tables: DatabaseTable[],
+
+
+import { useRouter } from "vue-router"
+//pinia
+import { useDBStore } from "../../store"
+import { storeToRefs } from "pinia"
+
+
+interface pageInterface {
+  formType: 'add' | 'edit',
+  formData: { [property: string]: any }
 }
-const data = reactive(new formConfig())
-let { initTableConfig, initFieldsConfig, selectedTableData } = toRefs(data)
-let fieldTypeData: any
 
-const dbTableData = reactive<dbTableData>({
-  tables: [
-    new DatabaseTable('User',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-        { field: 'work_experience', name: '工作经历', type: 'string' },
-
-      ], []),
-    new DatabaseTable('experience',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-    new DatabaseTable('school',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-    new DatabaseTable('project',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-    new DatabaseTable('table1',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-    new DatabaseTable('table2',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-    new DatabaseTable('table3',
-      [
-        { field: 'username', name: '用户名', type: 'string' },
-        { field: 'tel', name: '电话', type: 'string' },
-        { field: 'email', name: '邮箱', type: 'string' },
-        { field: 'github', name: 'github', type: 'string' },
-        { field: 'headicon', name: '头像', type: 'string' },
-        { field: 'position', name: '职位', type: 'string' },
-        { field: 'education', name: '教育经历', type: 'string' },
-        { field: 'projects', name: '项目', type: 'string' },
-
-      ], []),
-  ]
+const pageData = reactive<pageInterface>({
+  formType: 'add',
+  formData: {}
 })
-let showTableDialog = ref(false)
-let showTableFieldDialog = ref(false)
+
+const store = useDBStore()
+const $router = useRouter()
+
+const databaseId: number | string = parseInt($router.currentRoute.value.params.database as string)
+const dbInd = store.database.findIndex(db => {
+  return db.id === databaseId
+})
+const tableName: string = $router.currentRoute.value.params.table as string
+const tbInd = store.database[dbInd].tables.findIndex(tb => {
+  return tb.name === tableName
+})
+
+const data = reactive(new formConfig())
+data.initFieldsConfig.forEach(field => {
+
+})
+data.selectedTableData = store.database[dbInd].tables[tbInd].fields
+let { initTableConfig, initFieldsConfig, selectedTableData } = toRefs(data)
+
 let showFieldDialog = ref(false)
 
-//拿到字段类型字典
-const handleGetFeildTypes = async function () {
-  return await getFieldTypes('mysql')
-}
-const handleCreateNewTable = function (data: any) {
-  showTableDialog.value = false
-}
-const handleCreateNewField = function (data: any) {
+const handleSave = function (params: any) {
+  if (pageData.formType === "edit") {
+    store.database[dbInd].tables[tbInd].fields.forEach((field, index, target: any) => {
+      if (field.field === params.field) {
+        Object.keys(params).forEach((key) => {
+          target[index][key] = params[key]
+        })
+      }
+    })
+  } else {
+    store.database[dbInd].tables[tbInd].fields.push(params)
+  }
+
   showFieldDialog.value = false
-  console.log(data)
 }
-const handleSaveTableFields = function (data: any) {
-  showTableFieldDialog.value = false
-  console.log(data)
+
+const handleOpenDialog = function (type: "add" | "edit", data?: any) {
+  showFieldDialog.value = true
+  pageData.formType = type
+  if (type === "edit") {
+    pageData.formData = data
+  }
 }
-//新建字段
-const handleOpenFieldCreateDialog = async function () {
-  fieldTypeData = await handleGetFeildTypes()
-  data.initFieldsConfig.forEach((item, ind, arr) => {
-    if (item.field === "type") {
-      arr[ind].data = fieldTypeData
+
+const handleRemoveField = function (field: string) {
+  store.database[dbInd].tables[tbInd].fields.forEach((fieldObj, index, target) => {
+    if (fieldObj.field === field) {
+      target.splice(index, 1)
     }
   })
-  showFieldDialog.value = true
-}
-//打开表格设计字段弹窗
-const handleOpenTableFieldEditDialog = function (arr: dbField[]) {
-  showTableFieldDialog.value = true
-  data.selectedTableData = arr
-}
+} 
 </script>
 <style lang="scss" scoped>
 .database-card {

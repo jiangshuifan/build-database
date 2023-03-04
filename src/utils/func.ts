@@ -9,7 +9,7 @@ export const getFieldObject = function (array: any, field: string) {
       console.log(array, field, preV)
       throw new Error(`字段${field}重复`)
     } else {
-      preV[value[field]] = ''
+      preV[value[field]] = undefined
     }
     return preV
   },
@@ -25,4 +25,23 @@ export const getTableColumns = function (array: dbField[]) {
       title: value.name
     }); return preV
   }, [])
+}
+
+
+export const deepClone = function (obj: any) {
+  let objClone: any = Array.isArray(obj) ? [] : {};
+  if (obj && typeof obj === "object") {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        //判断ojb子元素是否为对象，如果是，递归复制
+        if (obj[key] && typeof obj[key] === "object") {
+          objClone[key] = deepClone(obj[key]);
+        } else {
+          //如果不是，简单复制
+          objClone[key] = obj[key];
+        }
+      }
+    }
+  }
+  return objClone;
 }

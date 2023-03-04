@@ -2,13 +2,15 @@
 
 <template>
   <div style="height:100%;width:100%">
-    <Echart :option="option"></Echart>
+    <Echart :option="option" :data="initData.nodes"></Echart>
+    <!-- <Demo></Demo> -->
   </div>
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, computed } from "vue"
 import { DatabaseTable } from '../../database'
 import Echart from "../../components/echarts.vue"
+// import Demo from "./demo.vue"
 import { outPutOption, getGraphNodes } from "../../utils/format-data/graph-nodes"
 
 interface dbTableData {
@@ -103,6 +105,7 @@ const dbTableData = reactive<dbTableData>({
       ], []),
   ]
 })
-const option = outPutOption(getGraphNodes(dbTableData.tables))
+const initData = getGraphNodes(dbTableData.tables)
+const option = outPutOption(initData)
 </script>
 <style lang="scss" scoped></style>

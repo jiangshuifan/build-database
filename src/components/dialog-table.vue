@@ -3,6 +3,11 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column v-for="column in columns" header-align="center" align="center" :prop="column.field"
         :label="column.title" />
+      <el-table-column header-align="center" align="center">
+        <template #default>
+
+        </template>
+      </el-table-column>
     </el-table>
     <template #footer>
       <span class="dialog-footer">

@@ -12,6 +12,7 @@ import {
   GridComponent,
   DatasetComponent,
   TransformComponent,
+  GraphicComponent
 } from "echarts/components";
 
 // 标签自动布局，全局过渡动画等特性
@@ -22,6 +23,7 @@ import { CanvasRenderer, SVGRenderer } from "echarts/renderers";
 
 // 注册必须的组件
 echarts.use([
+  GraphicComponent,
   GraphChart,
   LegendComponent,
   TitleComponent,
