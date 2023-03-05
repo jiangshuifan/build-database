@@ -1,0 +1,14 @@
+[
+  {
+    "api": "getList",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "获取数据库列表"
+  },
+  {
+    "api": "addDb",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "新建数据库"
+  }
+]

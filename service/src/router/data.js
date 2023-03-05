@@ -1,9 +1,9 @@
 
 const Router = require('koa-router')
-const router = new Router({ prefix: '/table'})
+const router = new Router({ prefix: '/data'})
   
-const { getList,addDb } = require('../controller/table.controller.js')
-const { getListMiddleware,addDbMiddleware } = require('../middleware/table.controller.js')
+const { getList,addDb } = require('../controller/data.controller.js')
+const { getListMiddleware,addDbMiddleware } = require('../middleware/data.controller.js')
 
   
 //获取数据库列表

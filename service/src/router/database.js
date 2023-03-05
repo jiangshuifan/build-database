@@ -1,9 +1,16 @@
-const Router = require('koa-router');
-const { handleGetDatabaseList, handleAddNewDatabase } = require("../controller/database.controller")
 
-const router = new Router({ prefix: '/database' });
+const Router = require('koa-router')
+const router = new Router({ prefix: '/database'})
+  
+const { getList,addDb } = require('../controller/database.controller.js')
+const { getListMiddleware,addDbMiddleware } = require('../middleware/database.controller.js')
 
-router.post('/list', handleGetDatabaseList);
-router.post('/add', handleAddNewDatabase);
+  
+//获取数据库列表
+router.post('/getList',getListMiddleware,getList)
 
-module.exports = router;
+
+//新建数据库
+router.post('/addDb',addDbMiddleware,addDb)
+
+module.exports = router 
