@@ -5,7 +5,8 @@
     <el-header style="display:flex;align-items:center ;">
       <el-button text @click="() => { handleCreateDB() }">新建数据库</el-button>
       <el-button text>导入数据库</el-button>
-      <el-button text @click="handleGetFeildTypes">测试</el-button>
+      <el-button text @click="handleTest">查询测试</el-button>
+      <el-button text @click="handleAddTest">新建测试</el-button>
     </el-header>
     <el-main style="flex: 1;">
       <div v-for="db in database" @click="() => { handleViewDB(db.id) }" class="db-item">
@@ -25,6 +26,7 @@
 <script setup lang="ts">
 import { ref, reactive, toRefs, computed } from "vue"
 import { getFieldTypes } from "../../api/index"
+import { getDatabaseList, createDatabase } from "../../api/database"
 
 import { Database } from "../../database"
 import { formConfig } from "../../interface/form"
@@ -53,8 +55,17 @@ let showTableDialog = ref(false)
 const { database } = storeToRefs(store)
 
 //拿到字段类型字典
-const handleGetFeildTypes = async function () {
-  return await getFieldTypes('mysql')
+const handleTest = async function () {
+  return await getDatabaseList()
+
+}
+const handleAddTest = async function () {
+  return await createDatabase({
+    dbName: '数据库',
+    dbType: 'mysql',
+    isPrivate: false,
+    password: '88888888'
+  })
 }
 //打开编辑、新增数据库窗口
 const handleEditDB = function (db: any) {

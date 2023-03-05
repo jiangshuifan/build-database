@@ -9,49 +9,47 @@ const { DataTypes } = require('sequelize')
 //#endregion
 
 //创建模型方法2 // const sequelize = new Sequelize('sqlite::memory') const User = sequelize.define('User',{})
-const User = seq.define(
-  'User',
+const TbFields = seq.define(
+  'DBTable',
   {
     //id会自动创建
-    account: {
+    field: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      comment: '用户名，唯一',
+      comment: '字段名称，英文字段',
     },
-    password: {
+    fd_name: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: '密码',
+      comment: '字段名称·释义',
     },
-    header_icon:{
+    fd_type: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: '头像路径',
+      comment: '字段名称·释义',
     },
-    fans:{
-      type: DataTypes.ARRAY,
-      comment: '粉丝',
+    is_marjorkey: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: '主键',
     },
-    attentions:{
-      type:DataTypes.ARRAY,
-      comment: '关注者',
+    is_foreignkey: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      comment: '外键',
     },
-    is_online:{
-      type:DataTypes.STRING,
-      comment: '是否在线',
+    tb_id: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      comment: '数据库表id,外键',
     },
-    is_valid:{
-      type:DataTypes.BOOLEAN,
-      comment:"账号是否有效"
-    }
   },
   {
     //设置表名.不设置默认会生成模型名称的复数，也可以通过const sequelize = new Sequelize('sqlite::memory:', { define: {freezeTableName: true}})关闭自动生成复数
-    tableName: 'users',
+    tableName: 'tbFields',
     //设置不自动生成时间戳字段createdAt、updatedAt。也可以单独设置{createdAt:true,updatedAt:false}
     timestamps: false,
   }
 )
 
-module.exports = User
+module.exports = TbFields

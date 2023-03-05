@@ -1,43 +1,59 @@
-const User = require('./table/User.model');
-const Type = require('./table/Type.model');
-const Problem = require('./table/Problem.model');
-const ValidateCode = require('./table/ValidateCode.model');
+const Data = require('./table/Data.model');
+const Database = require('./table/Database.model');
+const Fields = require('./table/Fields.model');
+const Table = require('./table/Table.model');
 const { DataTypes } = require('sequelize');
-User.hasMany(Type, {
+Database.hasMany(Table, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'user_id',
+    name: 'db_id',
     //RESTRICT、CASCADE、NO ACTION、SET DEFAULT、SET NULL
   },
-  sourceKey: 'account',
+  sourceKey: 'id',
 });
-Type.hasMany(Problem, {
+Table.hasMany(Fields, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'problem_id',
+    name: 'tb_id',
+  },
+  sourceKey: 'id',
+});
+Table.hasMany(Data, {
+  onDelete: 'CASCADE',
+  foreignKey: {
+    type: DataTypes.INTEGER,
+    name: 'tb_id',
   },
   sourceKey: 'id',
 });
 
-Type.belongsTo(User, {
+Table.belongsTo(Database, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'account',
+    name: 'db_id',
     //RESTRICT、CASCADE、NO ACTION、SET DEFAULT、SET NULL
   },
   targetKey: 'id',
 });
-Problem.belongsTo(Type, {
+Fields.belongsTo(Table, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'problem_id',
+    name: 'tb_id',
+  },
+  targetKey: 'id',
+});
+Data.belongsTo(Table, {
+  onDelete: 'CASCADE',
+  foreignKey: {
+    type: DataTypes.INTEGER,
+    name: 'tb_id',
   },
   targetKey: 'id',
 });
 
 
-module.exports = { User, Type, Problem,ValidateCode};
+module.exports = { Data, Database, Fields, Table };
