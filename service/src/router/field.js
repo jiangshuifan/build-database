@@ -2,15 +2,23 @@
 const Router = require('koa-router')
 const router = new Router({ prefix: '/field'})
   
-const { getList,addDb } = require('../controller/field.controller.js')
-const { getListMiddleware,addDbMiddleware } = require('../middleware/field.controller.js')
+const { getList,addField,updateField,removeField } = require('../controller/field.controller.js')
+const { getListMiddleware,addFieldMiddleware,updateFieldMiddleware,removeFieldMiddleware } = require('../middleware/field.middleware.js')
 
   
-//获取数据库列表
-router.post('/getList',getListMiddleware,getList)
+//获取字段
+router.post('/list',getListMiddleware,getList)
 
 
-//新建数据库
-router.post('/addDb',addDbMiddleware,addDb)
+//新建字段
+router.post('/add',addFieldMiddleware,addField)
+
+
+//更新字段
+router.post('/update',updateFieldMiddleware,updateField)
+
+
+//移除字段
+router.post('/remove',removeFieldMiddleware,removeField)
 
 module.exports = router 

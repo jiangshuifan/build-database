@@ -12,6 +12,7 @@ let Out_Middleware_PATH = path.join(__dirname, "../src/middleware");
 let OUT_PUT_PATH = path.join(__dirname, "../src/router");
 let fileList = fs.readdirSync(API_JSON_PATH);
 
+
 const MIDDLEWARE_TEMPLATE = `
 {{middleware}}
 module.exports = {
@@ -22,9 +23,15 @@ const MIDDLEWARE_METHOD = `
 
 let {{api}}Middleware =async (ctx,next) =>{
   let params = ctx.request.body;
-  let res = validateParams(params, requiredParamsList)
+  let requiredParamsList = {{requiredParams}}
+  let res = {
+    success:true
+  }
+  if(requiredParamsList.length>0){
+    res =await validateParams(params,requiredParamsList)
+  }
   if (res.success) {
-    next()
+    await next()
   } else {
     throw new Error('必要参数' + res.errParams + '缺失')
   }
@@ -32,8 +39,8 @@ let {{api}}Middleware =async (ctx,next) =>{
 `;
 
 const IMPORT_TEMPLATE = `
-const { {{methods}} } = require('${API_PUBLIC_PATH}/{{apiFile}}')
-const { {{middleware}} } = require('${API_Middleware_PATH}/{{apiFile}}')
+const { {{methods}} } = require('${API_PUBLIC_PATH}/{{controllerFile}}')
+const { {{middleware}} } = require('${API_Middleware_PATH}/{{middlewareFile}}')
 `;
 const ROUTER_Template = `
 const Router = require('koa-router')
@@ -44,7 +51,7 @@ module.exports = router
 `;
 const ROUTE_TEMPLATE = `
 //{{annotation}}
-router.post('/{{routeName}}',{{middleware}},{{routeName}})
+router.post('/{{routePath}}',{{middleware}},{{routeName}})
 `;
 
 for (let file of fileList) {
@@ -65,6 +72,7 @@ for (let file of fileList) {
     let currentRoute = render(ROUTE_TEMPLATE, {
       annotation: route['desc'],
       routeName: route['api'],
+      routePath: route['path'],
       middleware: route['api'] + 'Middleware',
     });
     let currentMiddleware = render(MIDDLEWARE_METHOD, {
@@ -80,7 +88,8 @@ for (let file of fileList) {
   //导入方法的模板渲染
   let importTemplate = render(IMPORT_TEMPLATE, {
     methods: methodsTemplate.join(',', endOfLine),
-    apiFile: fileName + '.controller.js',
+    controllerFile: fileName + '.controller.js',
+    middlewareFile: fileName + '.middleware.js',
     middleware: middlewareList.join(',', endOfLine),
   });
 

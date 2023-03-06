@@ -9,9 +9,11 @@
       <el-button text @click="handleAddTest">新建测试</el-button>
     </el-header>
     <el-main style="flex: 1;">
-      <div v-for="db in database" @click="() => { handleViewDB(db.id) }" class="db-item">
-        <div>{{ db.name }}</div>
-        <el-button @click.stop="() => { handleDeleteDB(db.id) }" style="margin-left: auto;" text><el-icon>
+      <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
+        <div style="width:200px;">{{ db.dbName }}</div>
+        <div style="margin-left: 20px;">{{ db.dbType }}</div>
+        <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" style="margin-left: auto;"
+          text><el-icon>
             <DeleteFilled />
           </el-icon></el-button>
         <el-button @click.stop="() => { handleEditDB(db) }" text><el-icon>
@@ -24,35 +26,36 @@
     @save="handleCreateNewTable" :config="initDBConfig"></Form>
 </template>
 <script setup lang="ts">
-import { ref, reactive, toRefs, computed } from "vue"
+import { ref, reactive, toRefs, computed, onBeforeMount } from "vue"
 import { getFieldTypes } from "../../api/index"
-import { getDatabaseList, createDatabase } from "../../api/database"
+import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase } from "../../api/database"
+import { ElNotification } from "element-plus"
 
 import { Database } from "../../database"
 import { formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
-//状态管理
-import { useDBStore } from "../../store/index"
-import { storeToRefs } from "pinia"
+
 //路由
 import { useRouter } from "vue-router"
 const $router = useRouter()
 
 interface pageInterface {
   formType: 'add' | 'edit',
-  formData: { [property: string]: any }
+  formData: { [property: string]: any },
+  database: Database[]
 }
 
-const store = useDBStore()
-const data = reactive(new formConfig())
+const data = reactive({
+  ...new formConfig()
+})
 const pageData = reactive<pageInterface>({
   formType: 'add',
-  formData: {}
+  formData: {},
+  database: []
 })
 let { initDBConfig } = toRefs(data)
-let { formData, formType } = toRefs(pageData)
+let { formData, formType, database } = toRefs(pageData)
 let showTableDialog = ref(false)
-const { database } = storeToRefs(store)
 
 //拿到字段类型字典
 const handleTest = async function () {
@@ -60,9 +63,10 @@ const handleTest = async function () {
 
 }
 const handleAddTest = async function () {
-  return await createDatabase({
+  pageData.formType = 'add'
+  return await handleCreateNewTable({
     dbName: '数据库',
-    dbType: 'mysql',
+    dbType: 'MySQL',
     isPrivate: false,
     password: '88888888'
   })
@@ -79,27 +83,51 @@ const handleCreateDB = function () {
 }
 
 //新建、完成编辑数据库
-const handleCreateNewTable = function (data: any) {
+const handleCreateNewTable = async function (data: any) {
   showTableDialog.value = false
-  let ind = database.value.findIndex((db) => {
-    return data.id === db.id
-  })
   if (pageData.formType === 'add') {
-    const db = new Database(data.name, data.type)
-    store.database.push(db)
+    const db = new Database({
+      dbName: data.dbName,
+      dbType: data.dbType
+    })
+    let res = await createDatabase(db)
+    if (res.success) {
+      db.id = res.data.id as number
+      pageData.database.push(db)
+      ElNotification({
+        message: '数据库新建成功',
+        type: 'success'
+      })
+    }
   } else {
-    store.database[ind].name = data.name
-    store.database[ind].type = data.type
+    if ((await updateDatabase(data)).success) {
+      ElNotification({
+        message: '数据更新成功',
+        type: 'success'
+      })
+      for (let prop in data) {
+        pageData.formData[prop] = data[prop]
+      }
+    }
   }
 }
 
 
 //移除数据库
-const handleDeleteDB = function (id: number | string) {
-  const ind = database.value.findIndex((db) => {
-    return db.id === id
-  })
-  store.database.splice(ind, 1)
+const handleDeleteDB = async function (id: number | string, index: number) {
+  let res = await deleteDatabase(id)
+  if (res.success) {
+    ElNotification({
+      message: '数据库删除成功！',
+      type: 'success'
+    })
+    pageData.database.splice(index, 1)
+  } else {
+    ElNotification({
+      message: '数据库删除失败！',
+      type: 'error'
+    })
+  }
 }
 
 const handleViewDB = function (id: number | string) {
@@ -110,6 +138,11 @@ const handleViewDB = function (id: number | string) {
     }
   })
 }
+
+
+onBeforeMount(async () => {
+  pageData.database = (await getDatabaseList()).data
+})
 </script>
 <style lang="scss" scoped>
 .db-item {

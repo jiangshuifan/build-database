@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const path = require('path');
 
+const { formatReturn } = require('../utils/format')
 
 class PdfHandler {
   download = async function (ctx, next) {

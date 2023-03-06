@@ -4,9 +4,9 @@ const tableApi = require('./model-service/Table.service')
 const fieldApi = require('./model-service/Fields.service')
 const dataApi = require('./model-service/Data.service')
 module.exports = {
-  ...commonApi,
-  ...fieldApi,
-  ...tableApi,
-  ...databaseApi,
-  ...dataApi
+  common: commonApi,
+  field: fieldApi,
+  table: tableApi,
+  database: databaseApi,
+  data: dataApi
 }

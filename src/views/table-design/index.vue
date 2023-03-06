@@ -6,7 +6,7 @@
       <el-button @click="() => { handleOpenDialog('add') }">新建字段</el-button>
     </el-header>
     <el-main style="flex: 1;">
-      <el-table :data="selectedTableData" style="width: 100%">
+      <el-table :data="fields" style="width: 100%">
         <el-table-column v-for="column in tableFieldColumnList" header-align="center" align="center" :prop="column.field"
           :label="column.title"></el-table-column>
         <el-table-column header-align="center" align="center">
@@ -15,7 +15,7 @@
                 <Edit />
               </el-icon></el-button>
             <el-button @click="() => {
-              handleRemoveField(scoped.row.field)
+              handleRemoveField(scoped.row.id, scoped.$index as number)
             }" text><el-icon>
                 <DeleteFilled />
               </el-icon></el-button>
@@ -29,63 +29,66 @@
   </Form>
 </template>
 <script setup lang="ts">
-import { ref, reactive, toRefs, computed } from "vue"
-import { getFieldTypes } from "../../api/index"
-import { DatabaseTable, dbField, tableFieldColumnList } from '../../database'
+import { ref, reactive, toRefs, computed, onBeforeMount } from "vue"
+import { getFieldList, createField, updateField, deleteField } from "../../api/field"
+import { dbField, tableFieldColumnList, TableField } from '../../database'
 import { formConfigItem, formConfig } from "../../interface/form"
-import Form from "../../components/form.vue"
 
+import Form from "../../components/form.vue"
+import { ElNotification } from "element-plus"
 
 import { useRouter } from "vue-router"
-//pinia
-import { useDBStore } from "../../store"
-import { storeToRefs } from "pinia"
 
 
 interface pageInterface {
   formType: 'add' | 'edit',
-  formData: { [property: string]: any }
+  formData: { [property: string]: any },
+  fields: TableField[]
 }
 
 const pageData = reactive<pageInterface>({
   formType: 'add',
-  formData: {}
+  formData: {},
+  fields: []
 })
 
-const store = useDBStore()
 const $router = useRouter()
 
 const databaseId: number | string = parseInt($router.currentRoute.value.params.database as string)
-const dbInd = store.database.findIndex(db => {
-  return db.id === databaseId
-})
-const tableName: string = $router.currentRoute.value.params.table as string
-const tbInd = store.database[dbInd].tables.findIndex(tb => {
-  return tb.name === tableName
-})
+const tableId: number | string = parseInt($router.currentRoute.value.params.table as string)
 
 const data = reactive(new formConfig())
-data.initFieldsConfig.forEach(field => {
 
-})
-data.selectedTableData = store.database[dbInd].tables[tbInd].fields
-let { initTableConfig, initFieldsConfig, selectedTableData } = toRefs(data)
+const { fields } = toRefs(pageData)
+let { initTableConfig, initFieldsConfig } = toRefs(data)
 
 let showFieldDialog = ref(false)
 
-const handleSave = function (params: any) {
+const handleSave = async function (params: any) {
   if (pageData.formType === "edit") {
-    store.database[dbInd].tables[tbInd].fields.forEach((field, index, target: any) => {
-      if (field.field === params.field) {
-        Object.keys(params).forEach((key) => {
-          target[index][key] = params[key]
-        })
-      }
-    })
-  } else {
-    store.database[dbInd].tables[tbInd].fields.push(params)
-  }
+    let res = await updateField(params)
+    if (res.success) {
+      ElNotification({
+        message: '字段数据更新成功！',
+        type: "success"
+      })
+      Object.keys(params).forEach((key) => {
+        pageData.formData[key] = params[key]
+      })
+    }
 
+  } else {
+    params.tbId = tableId
+    let res = await createField(params)
+    if (res.success) {
+      ElNotification({
+        message: '字段新建成功！',
+        type: "success"
+      })
+      params.id = res.data.id
+      pageData.fields.push(params)
+    }
+  }
   showFieldDialog.value = false
 }
 
@@ -97,13 +100,21 @@ const handleOpenDialog = function (type: "add" | "edit", data?: any) {
   }
 }
 
-const handleRemoveField = function (field: string) {
-  store.database[dbInd].tables[tbInd].fields.forEach((fieldObj, index, target) => {
-    if (fieldObj.field === field) {
-      target.splice(index, 1)
-    }
-  })
-} 
+const handleRemoveField = async function (id: string | number, index: number) {
+  let res = await deleteField(id)
+  if (res.success) {
+    ElNotification({
+      message: '字段删除成功！',
+      type: "success"
+    })
+    pageData.fields.splice(index, 1)
+  }
+}
+
+onBeforeMount(async () => {
+  pageData.fields = (await getFieldList(tableId)).data
+  console.log(pageData.fields)
+})
 </script>
 <style lang="scss" scoped>
 .database-card {

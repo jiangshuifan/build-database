@@ -1,6 +1,6 @@
 <template>
   <div style="height: 100%;overflow: auto;">
-    <Table style="height: 100%;" :columns="columns" :table-data="tbData"></Table>
+    <Table style="height: 100%;" :columns="columns" :table-data="[]"></Table>
   </div>
 </template>
 
@@ -24,11 +24,11 @@ const dbInd = store.database.findIndex(db => {
 })
 const tableName: string = $router.currentRoute.value.params.table as string
 const tbInd = store.database[dbInd].tables.findIndex(tb => {
-  return tb.name === tableName
+  return tb.tbName === tableName
 })
 const table = store.database[dbInd].tables[tbInd]
-const columns = ref(getTableColumns(table.fields))
-const tbData = table.data
+const columns = ref(getTableColumns([]))
+
 </script>
 
 <style scoped></style>

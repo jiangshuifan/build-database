@@ -22,7 +22,7 @@ export const getTableColumns = function (array: dbField[]) {
   return array.reduce((preV: any, value: dbField) => {
     preV.push({
       field: value.field,
-      title: value.name
+      title: value.fdName
     }); return preV
   }, [])
 }

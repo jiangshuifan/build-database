@@ -1,14 +1,30 @@
 [
   {
     "api": "getList",
+    "path": "list",
     "allParams": [],
     "requiredParams": [],
     "desc": "获取数据库列表"
   },
   {
     "api": "addDb",
+    "path": "add",
     "allParams": [],
     "requiredParams": [],
     "desc": "新建数据库"
+  },
+  {
+    "api": "updateDb",
+    "path": "update",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "更新数据库"
+  },
+  {
+    "api": "removeDb",
+    "path": "remove",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "移除数据库"
   }
 ]

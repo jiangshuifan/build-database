@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize")
+const { formatReturn } = require('../utils/format')
 
 class DictionaryHandler {
   handleFieldTypes(ctx) {

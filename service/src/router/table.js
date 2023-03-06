@@ -2,15 +2,23 @@
 const Router = require('koa-router')
 const router = new Router({ prefix: '/table'})
   
-const { getList,addDb } = require('../controller/table.controller.js')
-const { getListMiddleware,addDbMiddleware } = require('../middleware/table.controller.js')
+const { getList,addTb,updateTb,removeTb } = require('../controller/table.controller.js')
+const { getListMiddleware,addTbMiddleware,updateTbMiddleware,removeTbMiddleware } = require('../middleware/table.middleware.js')
 
   
-//获取数据库列表
-router.post('/getList',getListMiddleware,getList)
+//获取表格列表
+router.post('/list',getListMiddleware,getList)
 
 
-//新建数据库
-router.post('/addDb',addDbMiddleware,addDb)
+//新建数据库表
+router.post('/add',addTbMiddleware,addTb)
+
+
+//更新数据库表
+router.post('/update',updateTbMiddleware,updateTb)
+
+
+//移除数据库表
+router.post('/remove',removeTbMiddleware,removeTb)
 
 module.exports = router 
