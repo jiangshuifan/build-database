@@ -2,13 +2,19 @@
 
 <template>
   <el-container style="flex-direction: column;height:100%">
-    <el-header style="display:flex;align-items:center ;">
-      <el-button text @click="() => { handleCreateDB() }">新建数据库</el-button>
-      <el-button text>导入数据库</el-button>
-      <el-button text @click="handleTest">查询测试</el-button>
-      <el-button text @click="handleAddTest">新建测试</el-button>
+    <el-header class="db-header">
+      <div>
+        <h1>数据库</h1>
+      </div>
+      <div class="db-tool">
+        <el-button text @click="() => { handleCreateDB() }">新建数据库</el-button>
+        <el-button text>导入数据库</el-button>
+        <el-button text @click="handleTest">查询测试</el-button>
+        <el-button text @click="handleAddTest">新建测试</el-button>
+      </div>
     </el-header>
     <el-main style="flex: 1;">
+
       <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
         <div style="width:200px;">{{ db.dbName }}</div>
         <div style="margin-left: 20px;">{{ db.dbType }}</div>
@@ -152,6 +158,37 @@ onBeforeMount(async () => {
 
   &:hover {
     background-color: rgba(230, 230, 230, 0.6);
+  }
+}
+
+:deep(.el-header) {
+  height: 160px !important;
+  background-image: linear-gradient(90deg, rgb(227, 238, 252), rgb(172, 210, 253));
+  color: #333333;
+  height: auto;
+  display: flex;
+  box-shadow: 0 10px 10px #33333344;
+
+  & div:first-child {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center
+  }
+
+  .db-tool {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+
+    .el-button {
+      font-weight: bold;
+
+      &:hover {
+        background-color: inherit;
+      }
+    }
   }
 }
 </style>

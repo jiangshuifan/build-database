@@ -25,18 +25,15 @@ export const outPutOption = function (graph: iGraph) {
         name: '',
         type: 'graph',
         layout: 'none',
-        data: graph.nodes,
+        nodes: graph.nodes,
         links: graph.links,
         categories: graph.categories,
-        roam: true,
-        draggable: true,
+        roam: false,//空白处拖动
+        draggable: false,
         label: {
           show: true,
           position: 'right',
           formatter: '{b}'
-        },
-        labelLayout: {
-          hideOverlap: true
         },
         scaleLimit: {
           min: 0.4,
@@ -99,4 +96,23 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
     instance += nodes.length
   })
   return target
+}
+
+
+export const getVisibleNodes = function (nodes: any[], seleted: { [prop: string]: boolean }) {
+  let inVisibleCategories: string[] = []//隐藏的类
+  for (let category in seleted) {
+    if (!seleted[category]) {
+      inVisibleCategories.push(category)
+    }
+  }
+  return nodes.filter(node => {
+    return inVisibleCategories.indexOf(node.category) === -1
+  })
+}
+
+export const getFieldList = function (arr: any[], field: string): string[] {
+  return arr.map(item => {
+    return item[field]
+  })
 }
