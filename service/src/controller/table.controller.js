@@ -1,6 +1,7 @@
-const { table } = require('../service/index')
+const { table, field } = require('../service/index')
 const { getAllTable, updateTable, isTBNameRepeat, createTable, deleteTableById } = table
-const { addTbError, tbNameRepeatError, tbNameRepeatUpdateError } = require('../errors/table.err')
+const { getAllField } = field
+const { updateError, queryTbError, addTbError, tbNameRepeatError, tbNameRepeatUpdateError } = require('../errors/table.err')
 const { formatReturn } = require('../utils/format')
 
 class TableHandler {
@@ -10,7 +11,7 @@ class TableHandler {
       let tbs = await getAllTable(data.dbId)
       ctx.body = formatReturn(true, tbs)
     } catch (err) {
-      console.log(err)
+      ctx.app.emit('error', queryTbError, ctx)
     }
   }
   addTb = async (ctx) => {
@@ -24,7 +25,6 @@ class TableHandler {
         ctx.body = formatReturn(true, { id: res.id })
       }
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', addTbError, ctx)
     }
   }
@@ -39,7 +39,7 @@ class TableHandler {
         ctx.body = formatReturn(true)
       }
     } catch (err) {
-      console.log(err)
+      ctx.app.emit('error', updateError, ctx)
     }
   }
   removeTb = async (ctx) => {
@@ -47,6 +47,19 @@ class TableHandler {
       const tb = ctx.request.body
       await deleteTableById(tb.id)
       ctx.body = formatReturn(true)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  getTableTree = async (ctx) => {
+    try {
+      const data = ctx.request.body
+      let tbs = await getAllTable(data.dbId)
+      for (let i = 0; i < tbs.length; i++) {
+        tbs[i].children = await getAllField(tbs[i].id)
+      }
+      ctx.body = formatReturn(true, tbs)
     } catch (err) {
       console.log(err)
     }

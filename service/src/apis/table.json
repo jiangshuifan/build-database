@@ -26,5 +26,12 @@
     "allParams": [],
     "requiredParams": [],
     "desc": "移除数据库表"
+  },
+  {
+    "api": "getTableTree",
+    "path": "tree",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "表格+字段树结构"
   }
 ]

@@ -15,6 +15,7 @@ class FieldsService {
       }
     })
     fields = await formatToNormalArray(fields)
+    console.log(fields)
     return fields
   }
   //新建

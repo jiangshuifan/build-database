@@ -1,9 +1,15 @@
-import { DatabaseTable } from '../../database'
-interface iGraph {
+export interface tableRoot {
+  tbName: string
+  children: any[]
+}
+
+export interface iGraph {
   nodes: any[]
   links: any[]
   categories: any[]
 }
+
+
 export const outPutOption = function (graph: iGraph) {
   return {
     tooltip: {},
@@ -16,14 +22,14 @@ export const outPutOption = function (graph: iGraph) {
     ],
     series: [
       {
-        name: 'Les Miserables',
+        name: '',
         type: 'graph',
         layout: 'none',
         data: graph.nodes,
         links: graph.links,
         categories: graph.categories,
         roam: true,
-        draggable: false,
+        draggable: true,
         label: {
           show: true,
           position: 'right',
@@ -39,12 +45,12 @@ export const outPutOption = function (graph: iGraph) {
         lineStyle: {
           color: 'source',
           curveness: 0.3
-        }
+        },
       }
     ]
   }
 }
-export const getGraphNodes = function (tables: DatabaseTable[], radius: number = 15) {
+export const getGraphNodes = function (tables: tableRoot[], radius: number = 15): iGraph {
   let instance = 0
   const target: iGraph = {
     nodes: [],
@@ -54,7 +60,7 @@ export const getGraphNodes = function (tables: DatabaseTable[], radius: number =
   tables.forEach((v, ind) => {
     let i = 0
     let centerId = instance + i
-    let fieldsNum = v.fields.length
+    let fieldsNum = v.children.length
     let gap = 2 * Math.PI / fieldsNum
     let centerX = 50 * (Math.floor(ind % 4) + 1)
     let centerY = 50 * (Math.floor(ind / 4) + 1)
@@ -62,24 +68,24 @@ export const getGraphNodes = function (tables: DatabaseTable[], radius: number =
     const nodes = [
       {
         id: instance + i,
-        name: v.name,
+        name: v.tbName,
         symbolSize: 50,
         x: centerX,
         y: centerY,
         value: '',
-        category: v.name
+        category: v.tbName
       }
     ]
 
-    v.fields.forEach((field, i) => {
+    v.children.forEach((field, i) => {
       nodes.push({
         id: instance + i + 1,
         name: field.field,
         symbolSize: 30,
         x: centerX + radius * Math.cos(gap * i),
         y: centerY + radius * Math.sin(gap * i),
-        value: field.type,
-        category: v.name
+        value: field.fdType,
+        category: v.tbName
       })
       target.links.push({
         source: instance + i + 1,
@@ -88,7 +94,7 @@ export const getGraphNodes = function (tables: DatabaseTable[], radius: number =
     })
     target.nodes = target.nodes.concat(nodes)
     target.categories.push({
-      name: v.name
+      name: v.tbName
     })
     instance += nodes.length
   })

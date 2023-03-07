@@ -1,6 +1,6 @@
 const { field } = require('../service/index')
 const { getAllField, updateField, isFieldRepeat, createField, deleteFieldById } = field
-const { addFdError, fieldRepeatError, fieldRepeatUpdateError, updateFdError } = require('../errors/field.err')
+const { queryError, addFdError, fieldRepeatError, fieldRepeatUpdateError, updateFdError } = require('../errors/field.err')
 const { formatReturn } = require('../utils/format')
 
 class FieldHandler {
@@ -10,7 +10,7 @@ class FieldHandler {
       let tbs = await getAllField(fd.tbId)
       ctx.body = formatReturn(true, tbs)
     } catch (err) {
-      console.log(err)
+      ctx.app.emit('error', queryError, ctx)
     }
   }
   addField = async (ctx) => {
@@ -24,7 +24,6 @@ class FieldHandler {
         ctx.body = formatReturn(true, { id: res.id })
       }
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', addFdError, ctx)
     }
   }
@@ -39,7 +38,6 @@ class FieldHandler {
         ctx.body = formatReturn(true)
       }
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', updateFdError, ctx)
     }
   }
@@ -49,7 +47,6 @@ class FieldHandler {
       await deleteFieldById(field.id)
       ctx.body = formatReturn(true)
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', deleteFdError, ctx)
     }
   }

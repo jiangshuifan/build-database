@@ -1,15 +1,14 @@
 const { database } = require('../service/index')
 const { getAllDatabase, createDatabase, isDBNameRepeat, updateDatabase, deleteDatabaseById } = database
-const { addDbError, dbNameRepeatError, dbNameRepeatUpdateError, updateDbError } = require('../errors/database.err')
+const { removeDbError, queryError, addDbError, dbNameRepeatError, dbNameRepeatUpdateError, updateDbError } = require('../errors/database.err')
 const { formatReturn } = require('../utils/format')
 class DatabaseHandler {
   getList = async (ctx) => {
     try {
       let dbs = await getAllDatabase()
-      console.log(dbs)
       ctx.body = formatReturn(true, dbs)
     } catch (err) {
-      console.log(err)
+      ctx.app.emit('error', queryError, ctx)
     }
   }
   addDb = async (ctx) => {
@@ -23,7 +22,6 @@ class DatabaseHandler {
         ctx.body = formatReturn(true, { id: res.id })
       }
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', addDbError, ctx)
     }
   }
@@ -38,7 +36,6 @@ class DatabaseHandler {
         ctx.body = formatReturn(true)
       }
     } catch (err) {
-      console.log(err)
       ctx.app.emit('error', updateDbError, ctx)
     }
   }
@@ -48,7 +45,7 @@ class DatabaseHandler {
       await deleteDatabaseById(db.id)
       ctx.body = formatReturn(true)
     } catch (error) {
-      console.log(error)
+      ctx.app.emit('error', removeDbError, ctx)
     }
   }
 }

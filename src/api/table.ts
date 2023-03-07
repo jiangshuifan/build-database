@@ -1,5 +1,6 @@
 import request from "../utils/request"
 import { DatabaseTable, tbParams } from "../database"
+import { tableRoot } from "../utils/format-data/graph-nodes"
 export const getTableList = async function (databaseId: string | number) {
   return await request.post<DatabaseTable[]>('/table/list', { dbId: databaseId })
 }
@@ -16,4 +17,9 @@ export const updateTable = async function (tb: tbParams) {
 
 export const deleteTable = async function (id: number | string) {
   return await request.post('/table/remove', { id })
+}
+
+
+export const getTableFieldRelation = async function (dbId: number | string) {
+  return await request.post<tableRoot[]>('/table/tree', { dbId })
 }
