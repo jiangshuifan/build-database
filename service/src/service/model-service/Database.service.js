@@ -8,16 +8,18 @@ const {
 
 
 class DatabaseService {
+  //数据库列表
   getAllDatabase = async () => {
     let database = await Database.findAll()
     database = await formatToNormalArray(database)
     return database
   }
-  createDatabase = async ({ dbName, dbType, isPrivate, password }) => {
-    console.log(dbName, dbType, isPrivate, password)
+  //创建数据库
+  createDatabase = async ({ name, type, isPrivate, password }) => {
+    console.log(name, type, isPrivate, password)
     const newDb = {
-      db_name: dbName,
-      db_type: dbType,
+      name: name,
+      type: type,
       db_icon: '',
       password,
       is_private: isPrivate
@@ -25,25 +27,27 @@ class DatabaseService {
     const res = await Database.create(newDb)
     return res.dataValues
   }
+  //判断名称是否重复
   isDBNameRepeat = async (db) => {
     let params
     if (Object.hasOwn(db, 'id')) {
       params = {
-        db_name: db.dbName,
+        name: db.name,
         [Op.not]: {
           id: db.id
         }
       }
     } else {
       params = {
-        db_name: db.dbName
+        name: db.name
       }
     }
     return await getValueIsExisted(Database, params)
   }
+  //更新某一数据库数据信息
   updateDatabase = async (dbId, data) => {
-    let propertyList = ['dbName', 'password']
-    let columnList = ['db_name', 'password'] //字段意义和上面对应就行了
+    let propertyList = ['name', 'password']
+    let columnList = ['name', 'password'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
       if (data[propertyList[i]] !== undefined)
@@ -55,7 +59,7 @@ class DatabaseService {
       },
     })
   }
-
+  //删除数据库
   deleteDatabaseById = async (dbId) => {
     let exist = await Database.findOne({
       where: {

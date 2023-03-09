@@ -11,8 +11,8 @@
     "path": "add",
     "allParams": [],
     "requiredParams": [
-      "dbName",
-      "dbType",
+      "name",
+      "type",
       "isPrivate"
     ],
     "desc": "新建数据库"

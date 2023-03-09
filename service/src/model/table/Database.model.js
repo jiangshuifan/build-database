@@ -13,13 +13,13 @@ const Database = seq.define(
   'Database',
   {
     //id会自动创建
-    db_name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       comment: '数据库名称，唯一',
     },
-    db_type: {
+    type: {
       type: DataTypes.STRING,
       allowNull: false,
       comment: '数据库类型',

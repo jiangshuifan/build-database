@@ -6,21 +6,22 @@ const {
 } = require('../common-service/common.func')
 
 class TableService {
-
+  //获取数据库下所有表格
   getAllTable = async (dbId) => {
     let tables = await Table.findAll({
       where: {
-        db_id: dbId
+        db_id: dbId,
       }
     })
     tables = await formatToNormalArray(tables)
     return tables
 
   }
+
   //新建
   createTable = async (data) => {
     const newTb = {
-      tb_name: data.tbName,
+      name: data.name,
       db_id: data.dbId,
     }
     const res = await Table.create(newTb)
@@ -30,12 +31,12 @@ class TableService {
   isTBNameRepeat = async (tb) => {
     let params = {
       db_id: tb.dbId,
-      tb_name: tb.tbName,
+      name: tb.name,
     }
     if (Object.hasOwn(tb, 'id')) {
       params = {
         db_id: tb.dbId,
-        tb_name: tb.tbName,
+        name: tb.name,
         [Op.not]: {
           id: tb.id
         }
@@ -46,8 +47,8 @@ class TableService {
   }
   //更新
   updateTable = async (tbId, data) => {
-    let propertyList = ['tbName']
-    let columnList = ['tb_name'] //字段意义和上面对应就行了
+    let propertyList = ['name']
+    let columnList = ['name'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
       if (data[propertyList[i]] !== undefined)

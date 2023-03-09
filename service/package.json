@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "serve": "nodemon src/index.js",
-    "reset:db": "node build/reset-db.js"
+    "reset:db": "node build/reset-db.js",
+    "alter:db": "node build/alter-db.js"
   },
   "keywords": [],
   "author": "",

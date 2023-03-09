@@ -14,7 +14,7 @@ let getListMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -32,7 +32,7 @@ let addFieldMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -50,7 +50,7 @@ let updateFieldMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -68,7 +68,7 @@ let removeFieldMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 

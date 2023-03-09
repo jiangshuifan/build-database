@@ -15,17 +15,16 @@ class FieldsService {
       }
     })
     fields = await formatToNormalArray(fields)
-    console.log(fields)
     return fields
   }
   //新建
   createField = async (params) => {
     const newFd = {
       field: params.field,
-      fd_name: params.fdName,
-      fd_type: params.fdType,
-      is_marjorkey: params.isMarjorKey,
-      is_foreignkey: params.isForeignKey,
+      name: params.name,
+      type: params.type,
+      is_marjorkey: params.isMarjorkey,
+      is_foreignkey: params.isForeignkey,
       tb_id: params.tbId
     }
     const res = await Fields.create(newFd)
@@ -51,8 +50,8 @@ class FieldsService {
   //更新
   updateField = async (data) => {
     console.log(data)
-    let propertyList = ['field', 'fdName', 'fdType', 'isMarjorKey', 'isForeignKey', 'tbId']
-    let columnList = ['field', 'fd_name', 'fd_type', 'is_marjorkey', 'is_foreignkey', 'tb_id'] //字段意义和上面对应就行了
+    let propertyList = ['field', 'name', 'type', 'isMarjorkey', 'isForeignkey', 'tbId']
+    let columnList = ['field', 'name', 'type', 'is_marjorkey', 'is_foreignkey', 'tb_id'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
       if (data[propertyList[i]] !== undefined)

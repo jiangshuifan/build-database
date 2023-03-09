@@ -14,7 +14,7 @@ let getListMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -32,7 +32,7 @@ let addTbMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -50,7 +50,7 @@ let updateTbMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -68,7 +68,7 @@ let removeTbMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 
@@ -86,7 +86,7 @@ let getTableTreeMiddleware =async (ctx,next) =>{
   if (res.success) {
     await next()
   } else {
-    throw new Error('必要参数' + res.errParams + '缺失')
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
   }
 }
 

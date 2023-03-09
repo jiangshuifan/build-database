@@ -1,5 +1,5 @@
 
-type dbType = 'Postgres' | 'MySQL' | 'MariaDB' | 'SQLite' | 'MicrosoftSQLServe'
+type type = 'Postgres' | 'MySQL' | 'MariaDB' | 'SQLite' | 'MicrosoftSQLServe'
 
 
 
@@ -11,14 +11,14 @@ export interface columnItem {
 //数据库
 export interface dbParams {
   id?: number | string,
-  dbName?: string,
-  dbType?: dbType,
+  name?: string,
+  type?: type,
   isPrivate?: boolean,
   password?: string
 }
 //数据库表
 export interface tbParams {
-  tbName: string,
+  name: string,
   dbId: number | string,
   id?: number | string,
 }
@@ -27,8 +27,8 @@ export interface dbField {
   id?: number | string,
   tbId: number | string,
   field: string,
-  fdName: string,
-  fdType: string,
+  name: string,
+  type: string,
   isForeignKey?: boolean,
   isMarjorKey?: boolean,
 }
@@ -36,21 +36,21 @@ export interface dbField {
 
 export const tableFieldColumnList: columnItem[] = [
   { field: 'field', title: '字段名' },
-  { field: 'fdName', title: '字段释义' },
-  { field: 'fdType', title: '类型' },
-  { field: 'isMarjorKey', title: '是否为主键' },
-  { field: 'isForeignKey', title: '是否为外键' },
+  { field: 'name', title: '字段释义' },
+  { field: 'type', title: '类型' },
+  { field: 'isMarjorkey', title: '是否为主键' },
+  { field: 'isForeignkey', title: '是否为外键' },
 ]
 
 
 
 export class Database {
   constructor(params: dbParams) {
-    if (Object.hasOwn(params, 'dbName')) {
-      this.dbName = params.dbName as string
+    if (Object.hasOwn(params, 'name')) {
+      this.name = params.name as string
     }
     if (Object.hasOwn(params, 'type')) {
-      this.dbType = params.dbType as dbType
+      this.type = params.type as type
     }
     if (Object.hasOwn(params, 'isPrivate')) {
       this.isPrivate = params.isPrivate as boolean
@@ -60,22 +60,24 @@ export class Database {
     }
   }
   id: undefined | number = undefined
-  dbName = "database" + new Date().getTime()
-  dbType: dbType = 'MySQL'
-  tables: DatabaseTable[] = []
+  name = "database" + new Date().getTime()
+  type: type = 'MySQL'
   isPrivate: boolean = false
   password: string = ''
 }
 export class DatabaseTable {
   constructor(params: tbParams) {
-    if (Object.hasOwn(params, 'tbName')) {
-      this.tbName = params.tbName as string
+    if (Object.hasOwn(params, 'name')) {
+      this.name = params.name as string
     }
     this.dbId = params.dbId
+    if (Object.hasOwn(params, 'id')) {
+      this.id = params.id as number
+    }
   }
 
   id: undefined | number = undefined
-  tbName = "tableName" + new Date().getTime()
+  name = "tableName" + new Date().getTime()
   dbId: number | string = ""
 }
 export class TableField {
@@ -86,16 +88,16 @@ export class TableField {
     if (Object.hasOwn(params, 'isMarjorKey')) {
       this.isMarjorKey = params.isMarjorKey as boolean
     }
-    this.fdName = params.fdName
+    this.name = params.name
     this.tbId = params.tbId
-    this.fdType = params.fdType
+    this.type = params.type
     this.field = params.field
   }
   id: undefined | number = undefined
   field: string = "field"
   tbId: number | string = ""
-  fdName: string = "字段释义"
-  fdType: string = ""
+  name: string = "字段释义"
+  type: string = ""
   isForeignKey: boolean = false
   isMarjorKey: boolean = false
 }

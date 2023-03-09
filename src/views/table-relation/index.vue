@@ -1,11 +1,15 @@
 
 
 <template>
-  <div style="height:100%;width:100%">
-
-    <div style="width:800px;height:600px">
+  <div class="relation-container">
+    <div class="area-1"></div>
+    <div class="area-2"></div>
+    <div class="area-3">
       <div class="echart" ref="echart" style="height:100%;width:100%"></div>
     </div>
+    <div class="area-4"></div>
+    <div class="area-5"></div>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -157,4 +161,35 @@ onMounted(async () => {
 })
 
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.relation-container {
+  height: 100%;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: 1fr auto 1fr
+}
+
+.area-1 {
+  grid-area: 1/1/3/2;
+}
+
+.area-2 {
+  grid-area: 1/2/2/4;
+}
+
+.area-3 {
+  width: 800px;
+  height: 540px;
+  padding: 20px;
+  background-color: #fff;
+}
+
+.area-4 {
+  grid-area: 3/1/4/3;
+}
+
+.area-5 {
+  grid-area: 2/3/4/4;
+}
+</style>

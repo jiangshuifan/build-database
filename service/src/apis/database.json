@@ -10,7 +10,9 @@
     "api": "addDb",
     "path": "add",
     "allParams": [],
-    "requiredParams": [],
+    "requiredParams": [
+      "name"
+    ],
     "desc": "新建数据库"
   },
   {

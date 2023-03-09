@@ -1,39 +1,47 @@
 
 
 <template>
-  <el-container style="flex-direction: column;height:100%">
+  <el-container class="content-container">
     <el-header class="db-header">
       <div>
-        <h1>数据库</h1>
+        <h1 class="db-title">DATABASE</h1>
       </div>
       <div class="db-tool">
-        <el-button text @click="() => { handleCreateDB() }">新建数据库</el-button>
-        <el-button text>导入数据库</el-button>
-        <el-button text @click="handleTest">查询测试</el-button>
-        <el-button text @click="handleAddTest">新建测试</el-button>
+        <div @click="() => { handleCreateDB() }">新建数据库</div>
+        <div>导入数据库</div>
       </div>
     </el-header>
-    <el-main style="flex: 1;">
-
-      <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
-        <div style="width:200px;">{{ db.dbName }}</div>
-        <div style="margin-left: 20px;">{{ db.dbType }}</div>
-        <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" style="margin-left: auto;"
-          text><el-icon>
-            <DeleteFilled />
-          </el-icon></el-button>
-        <el-button @click.stop="() => { handleEditDB(db) }" text><el-icon>
-            <Edit />
-          </el-icon></el-button>
+    <el-main>
+      <div class="content-main">
+        <div class="db-query">
+          <el-input> <template #append>
+              <el-button><el-icon>
+                  <Search />
+                </el-icon></el-button>
+            </template></el-input>
+        </div>
+        <div class="db-list">
+          <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
+            <div style="width:200px;">{{ db.name }}</div>
+            <div style="margin-left: 20px;">{{ db.type }}</div>
+            <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" style="margin-left: auto;"
+              text><el-icon>
+                <DeleteFilled />
+              </el-icon></el-button>
+            <el-button @click.stop="() => { handleEditDB(db) }" text><el-icon>
+                <Edit />
+              </el-icon></el-button>
+          </div>
+        </div>
+      </div>
+      <div class="content-aside">
+        <Form ref="editform" :type="formType" :data="formData" @save="handleCreateNewTable" :config="initDBConfig"></Form>
       </div>
     </el-main>
   </el-container>
-  <Form v-model="showTableDialog" @close="() => { showTableDialog = false }" :type="formType" :data="formData"
-    @save="handleCreateNewTable" :config="initDBConfig"></Form>
 </template>
 <script setup lang="ts">
-import { ref, reactive, toRefs, computed, onBeforeMount } from "vue"
-import { getFieldTypes } from "../../api/index"
+import { ref, reactive, toRefs, onBeforeMount } from "vue"
 import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase } from "../../api/database"
 import { ElNotification } from "element-plus"
 
@@ -43,14 +51,15 @@ import Form from "../../components/form.vue"
 
 //路由
 import { useRouter } from "vue-router"
-const $router = useRouter()
 
+const editform = ref()
+
+const $router = useRouter()
 interface pageInterface {
   formType: 'add' | 'edit',
   formData: { [property: string]: any },
   database: Database[]
 }
-
 const data = reactive({
   ...new formConfig()
 })
@@ -63,29 +72,16 @@ let { initDBConfig } = toRefs(data)
 let { formData, formType, database } = toRefs(pageData)
 let showTableDialog = ref(false)
 
-//拿到字段类型字典
-const handleTest = async function () {
-  return await getDatabaseList()
-
-}
-const handleAddTest = async function () {
-  pageData.formType = 'add'
-  return await handleCreateNewTable({
-    dbName: '数据库',
-    dbType: 'MySQL',
-    isPrivate: false,
-    password: '88888888'
-  })
-}
 //打开编辑、新增数据库窗口
-const handleEditDB = function (db: any) {
+const handleEditDB = async function (db: any) {
   pageData.formType = "edit"
   showTableDialog.value = true
   pageData.formData = db
+  editform.value.init()
 }
-const handleCreateDB = function () {
+const handleCreateDB = async function () {
   pageData.formType = "add"
-  showTableDialog.value = true
+  editform.value.init()
 }
 
 //新建、完成编辑数据库
@@ -93,8 +89,8 @@ const handleCreateNewTable = async function (data: any) {
   showTableDialog.value = false
   if (pageData.formType === 'add') {
     const db = new Database({
-      dbName: data.dbName,
-      dbType: data.dbType
+      name: data.name,
+      type: data.type
     })
     let res = await createDatabase(db)
     if (res.success) {
@@ -151,44 +147,149 @@ onBeforeMount(async () => {
 })
 </script>
 <style lang="scss" scoped>
-.db-item {
-  display: flex;
-  align-items: center;
-  padding: 20px;
+$gap: 30px;
+$padding: 10px;
 
-  &:hover {
-    background-color: rgba(230, 230, 230, 0.6);
-  }
-}
+.content-container {
+  flex-direction: column;
+  height: 100%;
+  font-family: 'Ma Shan Zheng';
 
-:deep(.el-header) {
-  height: 160px !important;
-  background-image: linear-gradient(90deg, rgb(227, 238, 252), rgb(172, 210, 253));
-  color: #333333;
-  height: auto;
-  display: flex;
-  box-shadow: 0 10px 10px #33333344;
-
-  & div:first-child {
-    flex: 1;
+  :deep(.el-header) {
+    height: 160px !important;
+    background-color: #fff;
+    color: #333333;
+    height: auto;
     display: flex;
-    align-items: center;
-    justify-content: center
-  }
+    box-shadow: 0 0 $padding #33333344;
+    padding: 10px;
+    // border-radius: $padding;
 
-  .db-tool {
-    flex: 1;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: center;
+    & div:first-child {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
 
-    .el-button {
-      font-weight: bold;
+    .db-tool {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
 
-      &:hover {
-        background-color: inherit;
+
+      & div {
+        font-weight: bold;
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+
+        &:hover {
+          background-color: inherit;
+        }
       }
     }
   }
+
+  :deep(.el-main) {
+    padding: 0;
+    display: flex;
+    overflow: auto;
+    padding: $gap;
+
+
+
+    .content-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      box-shadow: 0 0 $padding #33333344;
+      overflow: auto;
+      // border-radius: $padding;
+      padding: 20px;
+
+
+      .db-query {
+        // background-color: #6f6f6f;
+        padding: 20px;
+
+        .el-input {
+          outline: none;
+          border-radius: 0;
+
+          .el-input__wrapper {
+            border-radius: 0;
+
+            &.is-focus {
+              box-shadow: 0 0 0 1px #dcdfe6 inset;
+            }
+          }
+        }
+
+        .el-input-group__append {
+          border-radius: 0;
+        }
+
+      }
+
+      .db-list {
+        height: 100%;
+        padding: 20px;
+        background-color: #fff;
+
+        .db-item {
+          display: flex;
+          align-items: center;
+          padding: 10px;
+          border: 0.2px solid #33333333;
+          margin-bottom: $padding;
+          cursor: pointer;
+
+          &:last-child {
+            margin-bottom: $padding;
+          }
+
+
+          // &:hover {
+          //   background-color: rgba(230, 230, 230, 0.6);
+          // }
+        }
+      }
+
+
+    }
+
+    .content-aside {
+      width: 300px;
+      margin-left: $gap;
+      background-color: #fff;
+      box-shadow: 0 0 $padding #33333344;
+      padding: 20px;
+      overflow: auto;
+      // border-radius: $padding;
+    }
+  }
+}
+
+.three-d-font-effect {
+  font-size: 60px;
+  color: #444;
+  text-shadow:
+    -1px 0 #888,
+    -2px 0 #888,
+    -3px 0 #888,
+    -4px 0 #888,
+}
+
+.three-d-box-effect {
+  box-shadow:
+    1px -1px #aaa,
+    2px -2px #aaa,
+    3px -3px #aaa,
+    4px -4px #aaa,
+    5px -5px #aaa,
+    6px -6px #aaa,
+    7px -7px #aaa,
 }
 </style>

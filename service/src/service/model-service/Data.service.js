@@ -15,11 +15,11 @@ class DataService {
     database = await formatToNormalArray(database)
     return database
   }
-  createDatabase = async ({ dbName, dbType, isPrivate, password }) => {
-    console.log(dbName, dbType, isPrivate, password)
+  createDatabase = async ({ name, type, isPrivate, password }) => {
+    console.log(name, type, isPrivate, password)
     const newDb = {
-      db_name: dbName,
-      db_type: dbType,
+      name: name,
+      type: type,
       db_icon: '',
       password,
       is_private: isPrivate

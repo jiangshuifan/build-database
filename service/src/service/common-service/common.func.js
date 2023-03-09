@@ -4,7 +4,11 @@ class CommonFunction {
   async formatObjPropertyToCamelCase(obj) {
     let data = {};
     for (let property in obj) {
-      data[camelCase(property)] = obj[property];
+      if (obj[property].constructor === Array && obj[property].length > 0) {
+        data[camelCase(property)] = await formatObjPropertyToCamelCase(obj[property]);
+      } else {
+        data[camelCase(property)] = obj[property];
+      }
     }
     return data;
   }

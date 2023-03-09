@@ -13,7 +13,7 @@ const DBTable = seq.define(
   'DBTable',
   {
     //id会自动创建
-    tb_name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       comment: '表名称',

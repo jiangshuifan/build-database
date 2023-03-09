@@ -1,6 +1,6 @@
 <template>
-  <div class="form-box">
-    <el-form class="form-body" v-model="fields">
+  <el-dialog v-model="visible" title="Tips" @open="() => handleOpenDialog()" width="40%" :before-close="handleCancel">
+    <el-form v-model="fields">
       <el-form-item v-for="item in formConfig" :label="item.label">
         <el-input v-if="item.eType === 'input'" v-model="fields[item.field]" v-bind="item.props" />
         <el-select v-else-if="item.eType === 'select'" v-model="fields[item.field]" v-bind="item.props">
@@ -17,30 +17,29 @@
         <el-radio-group v-else-if="item.eType === 'radio'" v-model="fields[item.field]" v-bind="item.props">
           <el-radio v-for="option in item.data" :label="option.value">{{ option.label }}</el-radio>
         </el-radio-group>
-        <el-cascader v-else-if="item.eType === 'cascader'" v-model="fields[item.field]" v-bind="item.props"
-          :options="item.data" />
-        <el-tree-select v-else="item.eType === 'tree-select'" v-model="fields[item.field]" :data="item.data"
-          :render-after-expand="false" />
+        <el-cascader v-else="item.eType === 'cascader'" v-model="fields[item.field]" v-bind="item.props" :options="[]" />
       </el-form-item>
     </el-form>
-    <div>
-      <el-button @click="handleCancel">取消</el-button>
-      <el-button type="primary" @click="handleConfirm">
-        确定
-      </el-button>
-    </div>
-  </div>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleConfirm">
+          确定
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">
-import { toRefs, reactive, watch, computed, nextTick } from "vue"
+import { toRefs, reactive, watch, computed } from "vue"
 import { deepClone } from "../utils/func";
 import request from "../utils/request"
 import { formConfigItem } from "../interface/form"
 
 
-
 let props = withDefaults(defineProps<{
+  value?: boolean,
   config?: formConfigItem[],
   type?: 'add' | 'edit',
   data?: { [property: string]: any },
@@ -49,9 +48,9 @@ let props = withDefaults(defineProps<{
     id: string,
     value: string,
     label: string
-  },
-  initData?: { [property: string]: any }
+  }
 }>(), {
+  value: false,
   type: 'add',
   data: () => { return {} },
   config: () => { return [] },
@@ -60,11 +59,9 @@ let props = withDefaults(defineProps<{
     return {
       id: 'id',
       value: 'value',
-      label: 'label',
-      children: 'children'
+      label: 'label'
     }
-  },
-  initData: undefined
+  }
 })
 
 
@@ -83,29 +80,25 @@ const getFieldObject = function (array: any, field: string) {
 }
 //最初没有将fieldsObject设置为响应式，导致响应式丢失,但使用computed会无法直接修改值
 let fieldsObject = reactive(getFieldObject(props.config, 'field'))
-formInit(props.initData)
-
-//页面响应式数据
+const handleOpenDialog = function () {
+  if (props.type === "edit") {
+    Object.keys(props.data).forEach(property => {
+      fieldsObject[property] = props.data[property]
+    })
+  }
+}
 const reactiveData = reactive({
+  visible: props.value,
   formConfig: props.config,
   fields: fieldsObject
 })
 //转为字典格式
 const formatDataArrToDic = function (array: { [property: string]: any }[], propertyReflect: { [property: string]: any }) {
   console.log(array)
-  if (array.length > 0) {
-    let dicList = array.reduce((prev: { [property: string]: any }[], v: { [property: string]: any }) => {
-      let target: any = { id: v[propertyReflect.id], value: v[propertyReflect.value], label: v[propertyReflect.label] }
-      if (Object.hasOwn(v, 'children') && v.children.constructor === Array) {
-        target.children = formatDataArrToDic(v.children, propertyReflect)
-      }
-      prev.push(target)
-      return prev
-    }, [])
-    return dicList
-  } else {
-    return []
-  }
+  return array.reduce((prev: { [property: string]: any }[], v: { [property: string]: any }) => {
+    prev.push({ id: v[propertyReflect.id], value: v[propertyReflect.value], label: v[propertyReflect.label] })
+    return prev
+  }, [])
 }
 //获取字典数据
 const getWholeConfig = async function (data: formConfigItem[]) {
@@ -115,9 +108,9 @@ const getWholeConfig = async function (data: formConfigItem[]) {
     let res: any
     if (Object.hasOwn(item, 'dic')) {
       if (Object.hasOwn(item, 'requestParams')) {
-        res = (await request[props.requestType](item.dic as string, item.requestParams)).data
+        res = await request[props.requestType](item.dic as string, item.requestParams)
       } else {
-        res = (await request[props.requestType](item.dic as string)).data
+        res = await request[props.requestType](item.dic as string)
       }
       if (Object.hasOwn(item, 'property-reflect')) {
         item.data = formatDataArrToDic(res, item['property-reflect'] as { [property: string]: any })
@@ -140,95 +133,24 @@ const getWholeConfig = async function (data: formConfigItem[]) {
 
 getWholeConfig(props.config)
 
-
-
-const { formConfig, fields } = toRefs(reactiveData)
+const { visible, formConfig, fields } = toRefs(reactiveData)
 const emits = defineEmits(['close', 'save'])
 
 const handleCancel = function () {
   emits('close')
-  formInit(props.initData)
+  formInit()
 }
 const handleConfirm = function () {
   const res = deepClone(reactiveData.fields)
   emits('save', res)
-  formInit(props.initData)
+  formInit()
 }
-function formInit(data?: { [prop: string]: any }) {
+const formInit = function () {
   let init = getFieldObject(props.config, 'field')
   Object.keys(init).forEach(property => {
     fieldsObject[property] = init[property]
   })
-  if (data) {
-    Object.keys(data).forEach(property => {
-      fieldsObject[property] = data[property]
-    })
-  }
 }
-
-
-const handleInit = async function (data?: { [prop: string]: any }) {
-  await nextTick()
-  if (props.type === "edit") {
-    Object.keys(props.data).forEach(property => {
-      fieldsObject[property] = props.data[property]
-    })
-  } else {
-    formInit(props.initData)
-  }
-}
-defineExpose({
-  init: handleInit
-})
 </script>
 
-<style lang="scss" scoped>
-$color: #919397;
-
-.el-form {
-  :deep(.el-form-item) {
-    flex-direction: column;
-    margin-bottom: 10px;
-
-    .el-form-item__label {
-      justify-content: flex-start;
-      font-weight: bold;
-    }
-
-    .el-input__wrapper {
-      border-radius: 0;
-
-      &.is-focus {
-        box-shadow: 0 0 0 1px $color inset !important;
-      }
-    }
-
-    .is-focus .el-input__wrapper {
-      box-shadow: 0 0 0 1px $color inset !important;
-    }
-
-    .el-radio__input.is-checked {
-      & .el-radio__inner {
-        border-color: $color;
-        background-color: $color;
-      }
-
-      &+.el-radio__label {
-        color: $color;
-        font-weight: bold;
-      }
-    }
-  }
-}
-
-.form-box {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  .form-body {
-    flex: 1;
-    overflow: auto;
-  }
-}
-</style>
+<style lang="scss" scoped></style>

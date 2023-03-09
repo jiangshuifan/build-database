@@ -18,12 +18,12 @@ const TbFields = seq.define(
       allowNull: false,
       comment: '字段名称，英文字段',
     },
-    fd_name: {
+    name: {
       type: DataTypes.STRING,
       allowNull: false,
       comment: '字段名称·释义',
     },
-    fd_type: {
+    type: {
       type: DataTypes.STRING,
       allowNull: false,
       comment: '字段名称·释义',

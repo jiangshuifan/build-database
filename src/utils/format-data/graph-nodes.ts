@@ -1,5 +1,5 @@
 export interface tableRoot {
-  tbName: string
+  name: string
   children: any[]
 }
 
@@ -65,12 +65,12 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
     const nodes = [
       {
         id: instance + i,
-        name: v.tbName,
+        name: v.name,
         symbolSize: 50,
         x: centerX,
         y: centerY,
         value: '',
-        category: v.tbName
+        category: v.name
       }
     ]
 
@@ -81,8 +81,8 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
         symbolSize: 30,
         x: centerX + radius * Math.cos(gap * i),
         y: centerY + radius * Math.sin(gap * i),
-        value: field.fdType,
-        category: v.tbName
+        value: field.type,
+        category: v.name
       })
       target.links.push({
         source: instance + i + 1,
@@ -91,7 +91,7 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
     })
     target.nodes = target.nodes.concat(nodes)
     target.categories.push({
-      name: v.tbName
+      name: v.name
     })
     instance += nodes.length
   })

@@ -12,8 +12,6 @@ import { getTableColumns } from "../../utils/func"
 import { useRouter } from "vue-router"
 //pinia
 import { useDBStore } from "../../store"
-import { storeToRefs } from "pinia"
-
 
 const store = useDBStore()
 const $router = useRouter()
@@ -23,10 +21,6 @@ const dbInd = store.database.findIndex(db => {
   return db.id === databaseId
 })
 const tableName: string = $router.currentRoute.value.params.table as string
-const tbInd = store.database[dbInd].tables.findIndex(tb => {
-  return tb.tbName === tableName
-})
-const table = store.database[dbInd].tables[tbInd]
 const columns = ref(getTableColumns([]))
 
 </script>
