@@ -38,8 +38,8 @@ export const tableFieldColumnList: columnItem[] = [
   { field: 'field', title: '字段名' },
   { field: 'name', title: '字段释义' },
   { field: 'type', title: '类型' },
-  { field: 'isMarjorkey', title: '是否为主键' },
-  { field: 'isForeignkey', title: '是否为外键' },
+  { field: 'isMarjorKey', title: '是否为主键' },
+  { field: 'isForeignKey', title: '是否为外键' },
 ]
 
 

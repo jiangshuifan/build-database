@@ -20,6 +20,6 @@ export const deleteTable = async function (id: number | string) {
 }
 
 
-export const getTableFieldRelation = async function (dbId: number | string) {
+export const getTableFieldNodes = async function (dbId: number | string) {
   return await request.post<tableRoot[]>('/table/tree', { dbId })
 }

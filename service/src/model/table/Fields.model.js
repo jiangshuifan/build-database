@@ -28,13 +28,13 @@ const TbFields = seq.define(
       allowNull: false,
       comment: '字段名称·释义',
     },
-    is_marjorkey: {
-      type: DataTypes.STRING,
+    is_marjor_key: {
+      type: DataTypes.BOOLEAN,
       allowNull: true,
       comment: '主键',
     },
-    is_foreignkey: {
-      type: DataTypes.STRING,
+    is_foreign_key: {
+      type: DataTypes.BOOLEAN,
       allowNull: true,
       comment: '外键',
     },
@@ -43,6 +43,11 @@ const TbFields = seq.define(
       allowNull: false,
       comment: '数据库表id,外键',
     },
+    target_key: {
+      type: DataTypes.NUMBER,
+      allowNull: true,
+      comment: '对应的主键的id',
+    }
   },
   {
     //设置表名.不设置默认会生成模型名称的复数，也可以通过const sequelize = new Sequelize('sqlite::memory:', { define: {freezeTableName: true}})关闭自动生成复数

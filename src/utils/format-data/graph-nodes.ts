@@ -47,8 +47,9 @@ export const outPutOption = function (graph: iGraph) {
     ]
   }
 }
-export const getGraphNodes = function (tables: tableRoot[], radius: number = 15): iGraph {
+export const getGraphNodes = function (tables: tableRoot[], radius: number = 15) {
   let instance = 0
+  let nodeReflect: any = {}
   const target: iGraph = {
     nodes: [],
     links: [],
@@ -75,6 +76,7 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
     ]
 
     v.children.forEach((field, i) => {
+      nodeReflect[field.id] = instance + i + 1
       nodes.push({
         id: instance + i + 1,
         name: field.field,
@@ -95,7 +97,10 @@ export const getGraphNodes = function (tables: tableRoot[], radius: number = 15)
     })
     instance += nodes.length
   })
-  return target
+  return {
+    reflect: nodeReflect,
+    option: target
+  }
 }
 
 
@@ -106,13 +111,22 @@ export const getVisibleNodes = function (nodes: any[], seleted: { [prop: string]
       inVisibleCategories.push(category)
     }
   }
-  return nodes.filter(node => {
-    return inVisibleCategories.indexOf(node.category) === -1
+  let visibleNodes: any[] = []
+  let inVisibleNodes: any[] = []
+  nodes.forEach(node => {
+    inVisibleCategories.indexOf(node.category) === -1 ? visibleNodes.push(node) : inVisibleNodes.push(node)
   })
+  return {
+    visibleNodes, inVisibleNodes
+  }
 }
 
 export const getFieldList = function (arr: any[], field: string): string[] {
   return arr.map(item => {
     return item[field]
   })
+}
+
+export const getLinks = function (arr: any[]) {
+
 }

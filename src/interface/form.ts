@@ -19,7 +19,7 @@ export interface formConfigItem {
   [property: string]: any
 }
 
-const Dic_TorF = [{ id: 1, value: 'true', label: '是' }, { id: 0, value: 'false', label: '否' }]
+const Dic_TorF = [{ id: 1, value: 1, label: '是' }, { id: 0, value: 0, label: '否' }]
 export class formConfig {
   selectedTableData: dbField[] = []
   initDBConfig: formConfigItem[] = [
@@ -60,14 +60,14 @@ export const getFieldFormConfig = function (prop: iFieldConfigForm): formConfigI
         type: 'mysql'
       }, label: '类型', props: { placeholder: "选择字段类型" }
     },
-    { eType: 'radio', field: 'isMarjorkey', label: '是否为主键', data: Dic_TorF },
+    { eType: 'radio', field: 'isMarjorKey', label: '是否为主键', data: Dic_TorF },
     {
-      eType: 'radio', field: 'isForeignkey', label: '是否为外键', data: Dic_TorF, appearWhen: {
-        isMarjorkey: 'false'
+      eType: 'radio', field: 'isForeignKey', label: '是否为外键', data: Dic_TorF, appearWhen: {
+        isMarjorKey: 0
       }
     },
     {
-      eType: "cascader", field: 'foreignKeys', label: '外键关联的主键', dic: "/dic/table-fields", requestParams: {
+      eType: "cascader", field: 'targetKey', label: '外键关联的主键', dic: "/dic/table-fields", requestParams: {
         dbId: prop.databaseId,
         tbId: prop.tableId
       },
@@ -75,7 +75,7 @@ export const getFieldFormConfig = function (prop: iFieldConfigForm): formConfigI
         "show-all-levels": false,
       },
       appearWhen: {
-        isForeignkey: 'true'
+        isForeignKey: 1
       }
     },
   ]

@@ -1,5 +1,6 @@
-const { database } = require('../service/index')
+const { database, common } = require('../service/index')
 const { getAllDatabase, createDatabase, isDBNameRepeat, updateDatabase, deleteDatabaseById } = database
+const { getAllMarjorKeyAndForeignKeyByDBID } = common
 const { removeDbError, queryError, addDbError, dbNameRepeatError, dbNameRepeatUpdateError, updateDbError } = require('../errors/database.err')
 const { formatReturn } = require('../utils/format')
 class DatabaseHandler {
@@ -47,6 +48,26 @@ class DatabaseHandler {
       ctx.body = formatReturn(true)
     } catch (error) {
       ctx.app.emit('error', removeDbError, ctx)
+    }
+  }
+  getAllFieldRelation = async (ctx) => {
+    try {
+      const db = ctx.request.body
+      const res = await getAllMarjorKeyAndForeignKeyByDBID(db.id)
+      ctx.body = formatReturn(true, res)
+    } catch (error) {
+      console.log(error)
+      ctx.app.emit('error', queryError, ctx)
+    }
+  }
+  downloadDb = async (ctx) => {
+    try {
+      const db = ctx.request.body
+      const res = ''
+      ctx.body = formatReturn(true, res)
+    } catch (error) {
+      console.log(error)
+      ctx.app.emit('error', queryError, ctx)
     }
   }
 }

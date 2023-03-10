@@ -61,8 +61,9 @@ const pageData = reactive<pageInterface>({
   fields: []
 })
 const formInitData = {
-  isMarjorkey: 'false',
-  isForeignkey: 'false'
+  isMarjorKey: 0,
+  isForeignKey: 0,
+  targetKey: null
 }
 const $router = useRouter()
 
@@ -79,6 +80,7 @@ console.log(initFieldsConfig)
 let showFieldDialog = ref(false)
 
 const handleSave = async function (params: any) {
+  console.log(params)
   if (pageData.formType === "edit") {
     let res = await updateField(params)
     if (res.success) {
@@ -110,6 +112,9 @@ const handleOpenDialog = function (type: "add" | "edit", data?: any) {
   showFieldDialog.value = true
   pageData.formType = type
   if (type === "edit") {
+    data.targetKey = JSON.parse(data.targetKey)
+    data.isForeignKey = data.isForeignKey === false ? 0 : 1
+    data.isMarjorKey = data.isMarjorKey === false ? 0 : 1
     pageData.formData = data
   }
   editForm.value.init()

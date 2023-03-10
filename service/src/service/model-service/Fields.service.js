@@ -23,8 +23,9 @@ class FieldsService {
       field: params.field,
       name: params.name,
       type: params.type,
-      is_marjorkey: params.isMarjorkey,
-      is_foreignkey: params.isForeignkey,
+      is_marjor_key: params.isMarjorKey,
+      is_foreign_key: params.isForeignKey,
+      target_key: params.targetKey,
       tb_id: params.tbId
     }
     const res = await Fields.create(newFd)
@@ -49,13 +50,16 @@ class FieldsService {
   }
   //更新
   updateField = async (data) => {
-    console.log(data)
-    let propertyList = ['field', 'name', 'type', 'isMarjorkey', 'isForeignkey', 'tbId']
-    let columnList = ['field', 'name', 'type', 'is_marjorkey', 'is_foreignkey', 'tb_id'] //字段意义和上面对应就行了
+    if (Array.isArray(data.targetKey)) {
+      data.targetKey = JSON.stringify(data.targetKey)
+    }
+    let propertyList = ['field', 'name', 'type', 'tbId', 'isMarjorKey', 'isForeignKey', 'targetKey']
+    let columnList = ['field', 'name', 'type', 'tb_id', 'is_marjor_key', 'is_foreign_key', 'target_key'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
-      if (data[propertyList[i]] !== undefined)
+      if (data[propertyList[i]] !== undefined) {
         proj[columnList[i]] = data[propertyList[i]]
+      }
     }
     Fields.update(proj, {
       where: {

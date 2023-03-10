@@ -1,15 +1,15 @@
 
-const { validateParams } = require("../utils/validate")
+const {validateParams} =require("../utils/validate")
 
 
-let getListMiddleware = async (ctx, next) => {
+let getListMiddleware =async (ctx,next) =>{
   let params = ctx.request.body;
   let requiredParamsList = []
   let res = {
-    success: true
+    success:true
   }
-  if (requiredParamsList.length > 0) {
-    res = await validateParams(params, requiredParamsList)
+  if(requiredParamsList.length>0){
+    res =await validateParams(params,requiredParamsList)
   }
   if (res.success) {
     await next()
@@ -20,14 +20,14 @@ let getListMiddleware = async (ctx, next) => {
 
 
 
-let addDbMiddleware = async (ctx, next) => {
+let addDbMiddleware =async (ctx,next) =>{
   let params = ctx.request.body;
-  let requiredParamsList = ["name", "type", "isPrivate"]
+  let requiredParamsList = ["name","type","isPrivate"]
   let res = {
-    success: true
+    success:true
   }
-  if (requiredParamsList.length > 0) {
-    res = await validateParams(params, requiredParamsList)
+  if(requiredParamsList.length>0){
+    res =await validateParams(params,requiredParamsList)
   }
   if (res.success) {
     await next()
@@ -37,5 +37,5 @@ let addDbMiddleware = async (ctx, next) => {
 }
 
 module.exports = {
-  getListMiddleware, addDbMiddleware
+getListMiddleware,addDbMiddleware
 }

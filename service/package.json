@@ -6,7 +6,8 @@
   "scripts": {
     "serve": "nodemon src/index.js",
     "reset:db": "node build/reset-db.js",
-    "alter:db": "node build/alter-db.js"
+    "alter:db": "node build/alter-db.js",
+    "reset:file": "node build/build-router.js"
   },
   "keywords": [],
   "author": "",

@@ -60,7 +60,6 @@ class TableHandler {
       let tbs = await getAllTable(data.dbId)
       for (let i = 0; i < tbs.length; i++) {
         let nodes = await getAllField(tbs[i].id)
-        console.log('==', nodes)
         tbs[i].children = nodes
       }
       ctx.body = formatReturn(true, tbs)

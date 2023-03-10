@@ -16,12 +16,12 @@
 import { ref, computed, onMounted, getCurrentInstance } from "vue"
 // import Demo from "./demo.vue"
 import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList } from "../../utils/format-data/graph-nodes"
-import { getTableFieldRelation } from "../../api/table"
+import { getTableFieldNodes } from "../../api/table"
+import { getTableFieldRelation } from "../../api/database"
 import { useRouter } from "vue-router"
 
 const $router = useRouter()
 const databaseId: number | string = parseInt($router.currentRoute.value.params.database as string)
-
 let initData: iGraph = {
   nodes: [],
   links: [],
@@ -34,7 +34,17 @@ let chart: any
 let $echarts = getCurrentInstance()?.appContext.config.globalProperties.$echarts
 onMounted(async () => {
   chart = $echarts.init(echart);
-  initData = getGraphNodes((await getTableFieldRelation(databaseId)).data)
+  let graphNodes = getGraphNodes((await getTableFieldNodes(databaseId)).data)
+  let tableFieldRelation = (await getTableFieldRelation(databaseId)).data
+
+  let indexReflect = graphNodes.reflect
+  initData = graphNodes.option
+  tableFieldRelation.forEach((relation) => {
+    initData.links.push({
+      source: indexReflect[relation.foreignKeyField],
+      target: indexReflect[relation.marjorkeyField],
+    })
+  })
   let option = outPutOption(initData)
   let categories = getFieldList(initData.categories, 'name')
   let links = initData.links
@@ -46,8 +56,10 @@ onMounted(async () => {
 
 
   chart.on('legendselectchanged', function (params: any) {
-    let visibleNodes = getVisibleNodes(option.series[0].nodes, params.selected)
+    let nodes = getVisibleNodes(option.series[0].nodes, params.selected)
+    let { inVisibleNodes, visibleNodes } = nodes
     setInvisibleDragableNodes(visibleNodes)
+    setInvisibleDragableNodes(inVisibleNodes, true)
   });
   chart.on('graphRoam', updatePosition);
 
@@ -83,18 +95,17 @@ onMounted(async () => {
 
   }
   //设置隐藏的可拖拽的点
-  function setInvisibleDragableNodes(nodes: any) {
-    let nodePosition: { [prop: string]: any } = {}
+  function setInvisibleDragableNodes(nodes: any, invisible: boolean = false) {
     let graphicOption = {
-      graphic: $echarts.util.map(nodes, function (item: any, dataIndex: any) {
+      graphic: $echarts.util.map(nodes, function (item: any) {
         let categoryInd = categories.indexOf(item.category)
         let color = colors[categoryInd % (colors.length)] + '66'
         //使用图形元素组件在节点上划出一个隐形的图形覆盖住节点
         var tmpPos = chart.convertToPixel({ 'seriesIndex': 0 }, [item.x, item.y]);
-        nodePosition[item.id] = tmpPos
+        console.log(invisible)
         return {
           type: 'circle',
-          id: dataIndex,
+          id: item.id,
           x: tmpPos[0],
           y: tmpPos[1],
           shape: {
@@ -104,10 +115,10 @@ onMounted(async () => {
             fill: color
           },
           // silent:true,
-          invisible: false,
+          invisible: invisible,
           draggable: true,
           ondragend: function () {
-            onPointDragging(dataIndex, [this.x, this.y])
+            onPointDragging(item.id, [this.x, this.y])
           },
           onclick: function () {
             if (item.name !== item.category) {
@@ -118,10 +129,10 @@ onMounted(async () => {
           //   onPointDragging(dataIndex, [this.x, this.y])
           // },
           onmouseover: function () {
-            showTooltip(dataIndex);
+            showTooltip(item.id);
           },
           onmouseout: function () {
-            hideTooltip(dataIndex);
+            hideTooltip(item.id);
           },
           z: 100              //使图层在最高层
         };
