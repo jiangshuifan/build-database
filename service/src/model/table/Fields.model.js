@@ -10,7 +10,7 @@ const { DataTypes } = require('sequelize')
 
 //创建模型方法2 // const sequelize = new Sequelize('sqlite::memory') const User = sequelize.define('User',{})
 const TbFields = seq.define(
-  'DBTable',
+  'TableField',
   {
     //id会自动创建
     field: {

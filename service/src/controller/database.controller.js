@@ -8,6 +8,7 @@ class DatabaseHandler {
       let dbs = await getAllDatabase()
       ctx.body = formatReturn(true, dbs)
     } catch (err) {
+      console.log(err)
       ctx.app.emit('error', queryError, ctx)
     }
   }

@@ -24,10 +24,10 @@ const Database = seq.define(
       allowNull: false,
       comment: '数据库类型',
     },
-    db_icon: {
+    description: {
       type: DataTypes.STRING,
-      allowNull: false,
-      comment: '数据库图标·路径',
+      allowNull: true,
+      comment: '描述',
     },
     password: {
       type: DataTypes.STRING,

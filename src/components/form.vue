@@ -2,25 +2,30 @@
   <div class="form-box">
     <el-form class="form-body" v-model="fields">
       <el-form-item v-for="item in formConfig" :label="item.label">
-        <el-input v-if="item.eType === 'input'" v-model="fields[item.field]" v-bind="item.props" />
-        <el-select v-else-if="item.eType === 'select'" v-model="fields[item.field]" v-bind="item.props">
+        <el-input v-if="item.eType === 'input'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props" />
+        <el-select v-else-if="item.eType === 'select'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props">
           <el-option v-for="option in item.data" :label="option.label" :value="option.value" />
         </el-select>
-        <el-date-picker v-else-if="item.eType === 'date-picker'" v-model="fields[item.field]" v-bind="item.props"
-          type="date" placeholder="Pick a date" style="width: 100%" />
-        <el-time-picker v-else-if="item.eType === 'time-picker'" v-model="fields[item.field]" v-bind="item.props"
-          placeholder="Pick a time" style="width: 100%" />
-        <el-switch v-else-if="item.eType === 'switch'" v-model="fields[item.field]" v-bind="item.props" />
-        <el-checkbox-group v-else-if="item.eType === 'checkbox'" v-model="fields[item.field]" v-bind="item.props">
+        <el-date-picker v-else-if="item.eType === 'date-picker'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props" type="date" placeholder="Pick a date" style="width: 100%" />
+        <el-time-picker v-else-if="item.eType === 'time-picker'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props" placeholder="Pick a time" style="width: 100%" />
+        <el-switch v-else-if="item.eType === 'switch'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props" />
+        <el-checkbox-group v-else-if="item.eType === 'checkbox'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props">
           <el-checkbox v-for="option in item.data" :label="option.label" :name="option.value" />
         </el-checkbox-group>
-        <el-radio-group v-else-if="item.eType === 'radio'" v-model="fields[item.field]" v-bind="item.props">
+        <el-radio-group v-else-if="item.eType === 'radio'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props">
           <el-radio v-for="option in item.data" :label="option.value">{{ option.label }}</el-radio>
         </el-radio-group>
-        <el-cascader v-else-if="item.eType === 'cascader'" v-model="fields[item.field]" v-bind="item.props"
-          :options="item.data" />
-        <el-tree-select v-else="item.eType === 'tree-select'" v-model="fields[item.field]" :data="item.data"
-          :render-after-expand="false" />
+        <el-cascader v-else-if="item.eType === 'cascader'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" v-bind="item.props" :options="item.data" />
+        <el-tree-select v-else="item.eType === 'tree-select'" :disabled="computedConditions[`disable${item.field}`]"
+          v-model="fields[item.field]" :data="item.data" />
       </el-form-item>
     </el-form>
     <div>
@@ -67,8 +72,11 @@ let props = withDefaults(defineProps<{
   initData: undefined
 })
 
+const computedConditions = reactive<{
+  [prop: string]: any
+}>({})
 
-
+//拿到form数据对象的方法
 const getFieldObject = function (array: any, field: string) {
   return array.reduce((preV: { [property: string]: any }, value: any) => {
     if (Object.hasOwn(preV, value[field])) {
@@ -92,7 +100,6 @@ const reactiveData = reactive({
 })
 //转为字典格式
 const formatDataArrToDic = function (array: { [property: string]: any }[], propertyReflect: { [property: string]: any }) {
-  console.log(array)
   if (array.length > 0) {
     let dicList = array.reduce((prev: { [property: string]: any }[], v: { [property: string]: any }) => {
       let target: any = { id: v[propertyReflect.id], value: v[propertyReflect.value], label: v[propertyReflect.label] }
@@ -133,13 +140,30 @@ const getWholeConfig = async function (data: formConfigItem[]) {
         item.data = formatDataArrToDic(res, props.reflectDicProp)
       }
     }
+    if (Object.hasOwn(item, 'appearWhen')) {
+      let FieldName = item.field
+      computedConditions[`disable${FieldName}`] = computed(() => {
+        let condition = item.appearWhen
+        let num = 0
+        for (let prop in condition) {
+          if (Object.hasOwn(reactiveData.fields, prop) && condition[prop] !== reactiveData.fields[prop]) {
+            num += 1
+            if (props.initData !== undefined) {
+              reactiveData.fields[FieldName] = props.initData[FieldName]
+            } else {
+              reactiveData.fields[FieldName] = ''
+            }
+          }
+        }
+        return num !== 0
+      })
+    }
     target.push(item)
   }
   reactiveData.formConfig = target
 }
 
 getWholeConfig(props.config)
-
 
 
 const { formConfig, fields } = toRefs(reactiveData)
@@ -195,12 +219,17 @@ $color: #919397;
       font-weight: bold;
     }
 
-    .el-input__wrapper {
+    .el-input__wrapper,
+    .el-textarea__inner {
       border-radius: 0;
 
       &.is-focus {
         box-shadow: 0 0 0 1px $color inset !important;
       }
+    }
+
+    .el-textarea__inner:focus {
+      box-shadow: 0 0 0 1px $color inset !important;
     }
 
     .is-focus .el-input__wrapper {

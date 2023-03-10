@@ -1,6 +1,7 @@
-const { table, field } = require('../service/index')
+const { table, field, common } = require('../service/index')
 const { getAllTable, updateTable, isTBNameRepeat, createTable, deleteTableById } = table
 const { getAllField } = field
+const { createTableAndSetDefaultField } = common
 const { updateError, queryTbError, addTbError, tbNameRepeatError, tbNameRepeatUpdateError } = require('../errors/table.err')
 const { formatReturn } = require('../utils/format')
 
@@ -21,10 +22,11 @@ class TableHandler {
       if (isExist !== false) {
         ctx.app.emit('error', tbNameRepeatError, ctx)
       } else {
-        const res = await createTable(tb)
+        const res = await createTableAndSetDefaultField(tb)
         ctx.body = formatReturn(true, { id: res.id })
       }
     } catch (err) {
+      console.log(err)
       ctx.app.emit('error', addTbError, ctx)
     }
   }

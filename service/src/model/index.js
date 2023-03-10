@@ -2,6 +2,8 @@ const Data = require('./table/Data.model');
 const Database = require('./table/Database.model');
 const Fields = require('./table/Fields.model');
 const Table = require('./table/Table.model');
+const Marjor = require('./table/Marjorkey.model');
+const Foreign = require('./table/Foreignkey.model');
 const { DataTypes } = require('sequelize');
 Database.hasMany(Table, {
   onDelete: 'CASCADE',
@@ -28,6 +30,15 @@ Table.hasMany(Data, {
   },
   sourceKey: 'id',
 });
+Marjor.hasMany(Foreign, {
+  onDelete: 'CASCADE',
+  foreignKey: {
+    type: DataTypes.INTEGER,
+    name: 'marjor_key_id',
+  },
+  sourceKey: 'id',
+})
+
 
 Table.belongsTo(Database, {
   onDelete: 'CASCADE',
@@ -54,6 +65,13 @@ Data.belongsTo(Table, {
   },
   targetKey: 'id',
 });
+Foreign.belongsTo(Marjor, {
+  onDelete: 'CASCADE',
+  foreignKey: {
+    type: DataTypes.INTEGER,
+    name: 'marjor_key_id',
+  },
+  targetKey: 'id',
+});
 
-
-module.exports = { Data, Database, Fields, Table };
+module.exports = { Data, Database, Fields, Table, Marjor, Foreign };

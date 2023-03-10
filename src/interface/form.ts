@@ -7,9 +7,15 @@ export interface formConfigItem {
   data?: any[],
   dic?: string,
   requestParams?: { [property: string]: any },
-  'property-reflect'?: {
-    [property: string]: any
+  'property-reflect'?: {//格式化成字典的映射
+    id: string,
+    label: string,
+    value: string,
+    children: string
   },
+  appearWhen?: {
+    [property: string]: any
+  }
   [property: string]: any
 }
 
@@ -23,6 +29,7 @@ export class formConfig {
     },
     { eType: 'radio', field: 'isPrivate', label: '是否加密', data: Dic_TorF },
     { eType: 'input', field: 'password', label: '密码', props: { placeholder: "输入密码" } },
+    { eType: 'input', field: 'description', label: '描述', props: { placeholder: "输入描述", type: 'textarea', resize: 'none', rows: 4 } },
   ]
   initTableConfig: formConfigItem[] = [
     { eType: 'input', field: 'name', label: '表格名称', props: { placeholder: "输入表格名称" } },
@@ -54,15 +61,21 @@ export const getFieldFormConfig = function (prop: iFieldConfigForm): formConfigI
       }, label: '类型', props: { placeholder: "选择字段类型" }
     },
     { eType: 'radio', field: 'isMarjorkey', label: '是否为主键', data: Dic_TorF },
-    { eType: 'radio', field: 'isForeignkey', label: '是否为外键', data: Dic_TorF },
     {
-      eType: "cascader", field: 'foreignKeys', label: '设置相关外键', dic: "/dic/table-fields", requestParams: {
+      eType: 'radio', field: 'isForeignkey', label: '是否为外键', data: Dic_TorF, appearWhen: {
+        isMarjorkey: 'false'
+      }
+    },
+    {
+      eType: "cascader", field: 'foreignKeys', label: '外键关联的主键', dic: "/dic/table-fields", requestParams: {
         dbId: prop.databaseId,
         tbId: prop.tableId
       },
       props: {
         "show-all-levels": false,
-        props: { multiple: true }
+      },
+      appearWhen: {
+        isForeignkey: 'true'
       }
     },
   ]

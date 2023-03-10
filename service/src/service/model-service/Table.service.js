@@ -15,7 +15,6 @@ class TableService {
     })
     tables = await formatToNormalArray(tables)
     return tables
-
   }
 
   //新建
