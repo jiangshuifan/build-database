@@ -13,8 +13,8 @@
     <el-main>
       <div class="content-main">
         <div class="db-query">
-          <el-input> <template #append>
-              <el-button><el-icon>
+          <el-input v-model="inputText"> <template #append>
+              <el-button @click="handleFuzzyQuery"><el-icon>
                   <Search />
                 </el-icon></el-button>
             </template></el-input>
@@ -44,7 +44,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
-import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb } from "../../api/database"
+import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs } from "../../api/database"
 import { ElNotification } from "element-plus"
 import { Database } from "../../database"
 import { formConfig } from "../../interface/form"
@@ -54,6 +54,8 @@ import Form from "../../components/form.vue"
 import { useRouter } from "vue-router"
 
 const editform = ref()
+
+const inputText = ref('')
 
 const $router = useRouter()
 interface pageInterface {
@@ -117,6 +119,10 @@ const handleCreateNewTable = async function (data: any) {
   }
 }
 
+//模糊查询
+const handleFuzzyQuery = async function () {
+  pageData.database = (await fuzzyQueryDbs(inputText.value)).data
+}
 
 //移除数据库
 const handleDeleteDB = async function (id: number | string, index: number) {

@@ -86,5 +86,17 @@ class DatabaseService {
       return db.dataValues
     }
   }
+  getDatabaseByName = async (name) => {
+    let res = await Database.findAll({
+      where: {
+        name: {
+          [Op.substring]: name
+        }
+      },
+    })
+    console.log(res)
+    res = await formatToNormalArray(res)
+    return res
+  }
 }
 module.exports = new DatabaseService()

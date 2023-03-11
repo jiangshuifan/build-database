@@ -26,7 +26,6 @@ const createDatabaseFile = async (props) => {
 
 function defineModel(seq, table, type) {
   let option = defineField(table.children, type)
-  console.log(option)
   let Table = seq.define(
     table.name.toLocaleUpperCase(),
     option,

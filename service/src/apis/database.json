@@ -44,5 +44,12 @@
     "allParams": [],
     "requiredParams": [],
     "desc": "生成并下载数据库"
+  },
+  {
+    "api": "fuzzyQueryDb",
+    "path": "fuzzy-query",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "模糊查询"
   }
 ]

@@ -1,5 +1,5 @@
 const { database, common } = require('../service/index')
-const { getAllDatabase, createDatabase, isDBNameRepeat, updateDatabase, deleteDatabaseById, getDbById } = database
+const { getAllDatabase, createDatabase, isDBNameRepeat, updateDatabase, deleteDatabaseById, getDbById, getDatabaseByName } = database
 const { getAllMarjorKeyAndForeignKeyByDBID, getAllTablesAndField } = common
 const { createDatabaseFile } = require('../utils/create-db')
 const { removeDbError, queryError, addDbError, dbNameRepeatError, dbNameRepeatUpdateError, updateDbError } = require('../errors/database.err')
@@ -78,6 +78,15 @@ class DatabaseHandler {
     } catch (error) {
       console.log(error)
       ctx.app.emit('error', queryError, ctx)
+    }
+  }
+  fuzzyQueryDb = async (ctx) => {
+    try {
+      let { keyword } = ctx.request.body
+      let dbs = await getDatabaseByName(keyword)
+      ctx.body = formatReturn(true, dbs)
+    } catch (err) {
+      console.log(err)
     }
   }
 }
