@@ -42,7 +42,7 @@ onMounted(async () => {
   tableFieldRelation.forEach((relation) => {
     initData.links.push({
       source: indexReflect[relation.foreignKeyField],
-      target: indexReflect[relation.marjorkeyField],
+      target: indexReflect[relation.marjorKeyField],
     })
   })
   let option = outPutOption(initData)
@@ -116,7 +116,7 @@ onMounted(async () => {
           },
           // silent:true,
           invisible: invisible,
-          draggable: true,
+          draggable: !invisible,
           ondragend: function () {
             onPointDragging(item.id, [this.x, this.y])
           },

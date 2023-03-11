@@ -15,14 +15,11 @@ class DatabaseService {
     return database
   }
   //创建数据库
-  createDatabase = async ({ name, type, isPrivate, password }) => {
-    console.log(name, type, isPrivate, password)
+  createDatabase = async ({ name, type, description }) => {
     const newDb = {
       name: name,
       type: type,
-      db_icon: '',
-      password,
-      is_private: isPrivate
+      description: description,
     }
     const res = await Database.create(newDb)
     return res.dataValues
@@ -46,8 +43,8 @@ class DatabaseService {
   }
   //更新某一数据库数据信息
   updateDatabase = async (dbId, data) => {
-    let propertyList = ['name', 'password']
-    let columnList = ['name', 'password'] //字段意义和上面对应就行了
+    let propertyList = ['name', 'password', 'description']
+    let columnList = ['name', 'password', 'description'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
       if (data[propertyList[i]] !== undefined)
@@ -74,6 +71,19 @@ class DatabaseService {
           id: dbId,
         },
       })
+    }
+  }
+  //通过id获取数据库
+  getDbById = async (dbId) => {
+    let db = await Database.findOne({
+      where: {
+        id: dbId,
+      },
+    })
+    if (db === null) {
+      throw new Error('database does not exist')
+    } else {
+      return db.dataValues
     }
   }
 }

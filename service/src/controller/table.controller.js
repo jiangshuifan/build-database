@@ -1,7 +1,7 @@
 const { table, field, common } = require('../service/index')
 const { getAllTable, updateTable, isTBNameRepeat, createTable, deleteTableById } = table
 const { getAllField } = field
-const { createTableAndSetDefaultField } = common
+const { createTableAndSetDefaultField, getAllTablesAndField } = common
 const { updateError, queryTbError, addTbError, tbNameRepeatError, tbNameRepeatUpdateError } = require('../errors/table.err')
 const { formatReturn } = require('../utils/format')
 
@@ -57,11 +57,7 @@ class TableHandler {
   getTableTree = async (ctx) => {
     try {
       const data = ctx.request.body
-      let tbs = await getAllTable(data.dbId)
-      for (let i = 0; i < tbs.length; i++) {
-        let nodes = await getAllField(tbs[i].id)
-        tbs[i].children = nodes
-      }
+      let tbs = await getAllTablesAndField(data.dbId)
       ctx.body = formatReturn(true, tbs)
     } catch (err) {
       console.log(err)

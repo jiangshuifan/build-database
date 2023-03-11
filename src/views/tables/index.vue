@@ -3,12 +3,12 @@
 <template>
   <el-container class="content-container">
     <el-header>
-      <div>
+      <div style="flex: 1;">
         <h1>TABLE</h1>
       </div>
       <div class="tb-tool">
-        <div @click="() => { handleOpenForm('add') }">新建表格</div>
-        <div @click="handleRedirectToCharts">表格关系</div>
+        <el-button link @click="() => { handleOpenForm('add') }">新建表格</el-button>
+        <el-button link @click="handleRedirectToCharts">表格关系</el-button>
       </div>
     </el-header>
     <el-main style="flex: 1;">
@@ -17,13 +17,13 @@
           <div v-for="(table, index) in tables" class="table-item">
             <div>{{ table.name }}</div>
             <el-button @click.stop="() => { handleOpenTableDesign(table.id as string | number) }"
-              style="margin-left: auto;" text><el-icon>
+              style="margin-left: auto;" link><el-icon>
                 <Brush />
               </el-icon></el-button>
-            <el-button @click.stop="() => { handleDeleteTable(table.id as number, index) }" text><el-icon>
+            <el-button @click.stop="() => { handleDeleteTable(table.id as number, index) }" link><el-icon>
                 <DeleteFilled />
               </el-icon></el-button>
-            <el-button @click.stop="() => { handleOpenForm('edit', table) }" text><el-icon>
+            <el-button @click.stop="() => { handleOpenForm('edit', table) }" link><el-icon>
                 <Edit />
               </el-icon></el-button>
           </div>
@@ -36,10 +36,6 @@
       </div>
     </el-main>
   </el-container>
-
-<!-- <Form v-model="showFieldDialog" @close="() => { showFieldDialog = false }" @save="handleCreateNewField"
-                                                                                :config="initFieldsConfig">
-                                                                              </Form> -->
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, computed, onBeforeMount } from "vue"
@@ -96,9 +92,6 @@ const handleOpenTableDesign = function (tableId: string | number) {
   })
 }
 //拿到字段类型字典
-const handleGetFeildTypes = async function () {
-  return await getFieldTypes('mysql')
-}
 const handleSave = async function (data: any) {
   showTableDialog.value = false
   if (pageData.formType === 'edit') {
@@ -167,27 +160,19 @@ $padding: 10px;
     color: #333333;
     height: auto;
     display: flex;
+    padding: $gap;
     box-shadow: 0 0 $padding #33333344;
     // border-radius: $padding;
 
-    & div:first-child {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center
-    }
 
     .tb-tool {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      align-items: end;
+      justify-content: end;
 
-
-      & div {
+      & .el-button {
         font-weight: bold;
-        display: grid;
-        place-content: center;
-        cursor: pointer;
 
         &:hover {
           background-color: inherit;
@@ -245,10 +230,16 @@ $padding: 10px;
         .table-item {
           display: flex;
           align-items: center;
-          padding: 10px;
+          padding-left: 10px;
+          padding-right: 10px;
           border: 0.2px solid #33333333;
           margin-bottom: $padding;
           cursor: pointer;
+
+          .el-button {
+            padding-top: 10px;
+            padding-bottom: 10px;
+          }
 
           &:last-child {
             margin-bottom: $padding;

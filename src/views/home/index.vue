@@ -7,8 +7,7 @@
         <h1 class="db-title">DATABASE</h1>
       </div>
       <div class="db-tool">
-        <div @click="() => { handleCreateDB() }">新建数据库</div>
-        <div>导入数据库</div>
+        <el-button link @click="() => { handleCreateDB() }">新建数据库</el-button>
       </div>
     </el-header>
     <el-main>
@@ -24,11 +23,14 @@
           <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
             <div style="width:200px;">{{ db.name }}</div>
             <div style="margin-left: 20px;">{{ db.type }}</div>
-            <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" style="margin-left: auto;"
-              text><el-icon>
+            <el-button @click.stop="() => { handleDownloadDB(db) }" style="margin-left: auto;" link>
+              <el-icon>
+                <Download />
+              </el-icon></el-button>
+            <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" link><el-icon>
                 <DeleteFilled />
               </el-icon></el-button>
-            <el-button @click.stop="() => { handleEditDB(db) }" text><el-icon>
+            <el-button @click.stop="() => { handleEditDB(db) }" link><el-icon>
                 <Edit />
               </el-icon></el-button>
           </div>
@@ -42,9 +44,8 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
-import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase } from "../../api/database"
+import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb } from "../../api/database"
 import { ElNotification } from "element-plus"
-
 import { Database } from "../../database"
 import { formConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
@@ -71,7 +72,6 @@ const pageData = reactive<pageInterface>({
 let { initDBConfig } = toRefs(data)
 let { formData, formType, database } = toRefs(pageData)
 let showTableDialog = ref(false)
-
 //打开编辑、新增数据库窗口
 const handleEditDB = async function (db: any) {
   pageData.formType = "edit"
@@ -83,14 +83,17 @@ const handleCreateDB = async function () {
   pageData.formType = "add"
   editform.value.init()
 }
-
+const handleDownloadDB = function (database: Database) {
+  downloadDb(database.id as number, database.name)
+}
 //新建、完成编辑数据库
 const handleCreateNewTable = async function (data: any) {
   showTableDialog.value = false
   if (pageData.formType === 'add') {
     const db = new Database({
       name: data.name,
-      type: data.type
+      type: data.type,
+      description: data.description
     })
     let res = await createDatabase(db)
     if (res.success) {
@@ -162,7 +165,7 @@ $padding: 10px;
     height: auto;
     display: flex;
     box-shadow: 0 0 $padding #33333344;
-    padding: 10px;
+    padding: $gap;
     // border-radius: $padding;
 
     & div:first-child {
@@ -174,14 +177,12 @@ $padding: 10px;
 
     .db-tool {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      align-items: end;
+      justify-content: end;
 
-
-      & div {
+      & .el-button {
         font-weight: bold;
-        display: grid;
-        place-content: center;
         cursor: pointer;
 
         &:hover {
@@ -241,10 +242,16 @@ $padding: 10px;
         .db-item {
           display: flex;
           align-items: center;
-          padding: 10px;
           border: 0.2px solid #33333333;
           margin-bottom: $padding;
+          padding-left: 10px;
+          padding-right: 10px;
           cursor: pointer;
+
+          .el-button {
+            padding-top: 10px;
+            padding-bottom: 10px;
+          }
 
           &:last-child {
             margin-bottom: $padding;

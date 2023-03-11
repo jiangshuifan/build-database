@@ -1,5 +1,5 @@
 // request.ts
-import axios, { AxiosInstance, AxiosResponse } from 'axios'
+import axios, { AxiosInstance, AxiosResponse, ResponseType } from 'axios'
 
 import { ElNotification } from "element-plus"
 
@@ -12,7 +12,8 @@ interface IOpts {
   method: string,
   headers?: object,
   params?: object | string,
-  data?: object | string
+  data?: object | string,
+  responseType?: ResponseType
 }
 
 export class Request {
@@ -49,21 +50,23 @@ export class Request {
     })
   }
 
-  async get<T>(url: string, options?: object | string) {
+  async get<T>(url: string, options?: object | string, responseType?: ResponseType) {
     return this.request<T>({
       url,
       method: 'get',
-      params: options
+      params: options,
+      responseType: responseType,
     })
   }
 
-  async post<T>(url: string, options?: object | string) {
+  async post<T>(url: string, options?: object | string, responseType?: ResponseType) {
     return this.request<T>({
       url,
       method: 'post',
       // headers: {
       //   'Content-Type':'application/x-www-form-urlencoded'
       // },
+      responseType: responseType,
       data: options
     })
   }

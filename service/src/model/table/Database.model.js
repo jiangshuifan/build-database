@@ -29,15 +29,6 @@ const Database = seq.define(
       allowNull: true,
       comment: '描述',
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      comment: '密码',
-    },
-    is_private: {
-      type: DataTypes.BOOLEAN,
-      comment: "数据库是否是加密的"
-    }
   },
   {
     //设置表名.不设置默认会生成模型名称的复数，也可以通过const sequelize = new Sequelize('sqlite::memory:', { define: {freezeTableName: true}})关闭自动生成复数

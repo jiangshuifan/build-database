@@ -15,7 +15,10 @@ export interface formConfigItem {
   },
   appearWhen?: {
     [property: string]: any
-  }
+  },
+  requiredWhen?: {
+    [property: string]: any
+  },
   [property: string]: any
 }
 
@@ -25,10 +28,8 @@ export class formConfig {
   initDBConfig: formConfigItem[] = [
     { eType: 'input', field: 'name', label: '数据库名称', props: { placeholder: "输入数据库名称" } },
     {
-      eType: 'select', field: 'type', label: '数据库类型', data: formatFieldArrToDic(['Postgres', 'MySQL', 'MariaDB', 'SQLite', 'MicrosoftSQLServe']), props: { placeholder: "选择数据库类型" }
+      eType: 'select', field: 'type', label: '数据库类型', dic: "/dic/database-types", props: { placeholder: "选择数据库类型" }
     },
-    { eType: 'radio', field: 'isPrivate', label: '是否加密', data: Dic_TorF },
-    { eType: 'input', field: 'password', label: '密码', props: { placeholder: "输入密码" } },
     { eType: 'input', field: 'description', label: '描述', props: { placeholder: "输入描述", type: 'textarea', resize: 'none', rows: 4 } },
   ]
   initTableConfig: formConfigItem[] = [
@@ -57,9 +58,11 @@ export const getFieldFormConfig = function (prop: iFieldConfigForm): formConfigI
     { eType: 'input', field: 'name', label: '备注', props: { placeholder: "输入备注名" } },
     {
       eType: 'select', field: 'type', dic: "/dic/field-types", requestParams: {
-        type: 'mysql'
+        dbId: prop.databaseId
       }, label: '类型', props: { placeholder: "选择字段类型" }
     },
+    { eType: 'radio', field: 'allowNull', label: '允许为空', data: Dic_TorF },
+    { eType: 'radio', field: 'unique', label: '是否唯一', data: Dic_TorF },
     { eType: 'radio', field: 'isMarjorKey', label: '是否为主键', data: Dic_TorF },
     {
       eType: 'radio', field: 'isForeignKey', label: '是否为外键', data: Dic_TorF, appearWhen: {

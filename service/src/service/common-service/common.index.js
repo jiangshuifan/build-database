@@ -25,6 +25,15 @@ class CrossTablesService {
     }
     return tables
   }
+  //获取数据库表格以及下面所有字段
+  getAllTablesAndField = async (dbId) => {
+    let tbs = await getAllTable(dbId)
+    for (let i = 0; i < tbs.length; i++) {
+      let nodes = await getAllField(tbs[i].id)
+      tbs[i].children = nodes
+    }
+    return tbs
+  }
   //新建数据库同时加入默认id字段
   createTableAndSetDefaultField = async (data) => {
     const res = await createTable(data)
@@ -36,7 +45,9 @@ class CrossTablesService {
       isMarjorKey: 1,
       isForeignKey: 0,
       tbId: id,
-      targetKey: null
+      targetKey: null,
+      allowNull: false,
+      unique: true
     }
     await createField(defaultFiled)
     return res
@@ -65,8 +76,10 @@ class CrossTablesService {
         let item = {
           marjorKeyTable: marjor.tbId,
           foreignKeyTable: key.tbId,
-          marjorkeyField: marjor.id,
-          foreignKeyField: key.id
+          marjorKeyField: marjor.id,
+          foreignKeyField: key.id,
+          foreignKeyName: key.field,
+          marjorKeyName: marjor.field
         }
         target.push(item)
       })
@@ -78,7 +91,7 @@ class CrossTablesService {
     let originMarjor = await Fields.findAndCountAll({
       where: {
         tb_id: data.tbId,
-        is_marjor_key: 1
+        is_marjor_key: true
       }
     })
     //分类型为新增和更新处理
@@ -86,8 +99,9 @@ class CrossTablesService {
       //找到当前表格当前的主键
       if (data.isMarjorKey === 1) {
         if (originMarjor.count !== 0) {
+          console.log(originMarjor.rows[0])
           //之前就有主键，那么将之前的主键改为非主键，再加入数据
-          await updateField({ id: originMarjor.rows[0].id, is_marjor_key: false })
+          await updateField({ id: originMarjor.rows[0].id, isMarjorKey: false })
         }
       }
       return await createField(data)
@@ -95,13 +109,13 @@ class CrossTablesService {
       if (data.isMarjorKey === 1) {
         if (originMarjor.count !== 0) {
           //之前就有主键，那么将之前的主键改为非主键，再加入数据
-          await updateField({ id: originMarjor.rows[0].id, is_marjor_key: false })
+          await updateField({ id: originMarjor.rows[0].id, isMarjorKey: false })
         }
       }
       return await updateField(data)
     }
   }
-  //更新字段，设置了主外键，先判断是否需要更新主外键表
+  //得到当前数据库下所有主外键关系，需要拿到
 }
 
 

@@ -1,4 +1,4 @@
-const { DB_Path } = require('../config')
+const { DB_Path } = require("../config")
 const { Sequelize } = require('sequelize')
 
 // const seq = new Sequelize('sqlite:' + '../../db/apistore.db')
@@ -7,4 +7,4 @@ const seq = new Sequelize({
   storage: DB_Path,
 })
 
-module.exports=seq
+module.exports = seq

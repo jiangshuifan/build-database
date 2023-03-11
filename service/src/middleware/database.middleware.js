@@ -4,7 +4,7 @@ const {validateParams} =require("../utils/validate")
 
 let getListMiddleware =async (ctx,next) =>{
   let params = ctx.request.body;
-  let requiredParamsList = ["id"]
+  let requiredParamsList = []
   let res = {
     success:true
   }

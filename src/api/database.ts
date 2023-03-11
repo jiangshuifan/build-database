@@ -1,4 +1,5 @@
 import request from "../utils/request"
+import { downloadBlobFile } from "../utils/download"
 import { Database, dbParams } from "../database"
 export const getDatabaseList = async function () {
   return await request.post<Database[]>('/database/list')
@@ -20,8 +21,17 @@ interface iTableFieldRelation {
   foreignKeyField: number,
   foreignKeyTable: number,
   marjorKeyTable: number,
-  marjorkeyField: number,
+  marjorKeyField: number,
+  marjorKeyName: string,
+  foreignKeyName: string,
 }
+//获取一数据库下所有主外键关系
 export const getTableFieldRelation = async function (dbId: number) {
   return await request.post<iTableFieldRelation[]>('/database/field-relation', { id: dbId })
-} 
+}
+
+
+export const downloadDb = async function (dbId: number, dbName: string) {
+  let blob = await request.post('/database/download', { id: dbId }, "blob")
+  downloadBlobFile(blob, dbName + new Date().getTime() + '.db')
+}

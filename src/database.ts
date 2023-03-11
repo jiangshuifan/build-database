@@ -13,8 +13,7 @@ export interface dbParams {
   id?: number | string,
   name?: string,
   type?: type,
-  isPrivate?: boolean,
-  password?: string
+  description?: string
 }
 //数据库表
 export interface tbParams {
@@ -48,22 +47,20 @@ export class Database {
   constructor(params: dbParams) {
     if (Object.hasOwn(params, 'name')) {
       this.name = params.name as string
+    } else {
+      this.name = "database" + new Date().getTime()
     }
     if (Object.hasOwn(params, 'type')) {
       this.type = params.type as type
     }
-    if (Object.hasOwn(params, 'isPrivate')) {
-      this.isPrivate = params.isPrivate as boolean
-    }
-    if (Object.hasOwn(params, 'password')) {
-      this.password = params.password as string
+    if (Object.hasOwn(params, 'description')) {
+      this.description = params.description as string
     }
   }
   id: undefined | number = undefined
-  name = "database" + new Date().getTime()
+  name: string = ""
   type: type = 'MySQL'
-  isPrivate: boolean = false
-  password: string = ''
+  description: string = ''
 }
 export class DatabaseTable {
   constructor(params: tbParams) {

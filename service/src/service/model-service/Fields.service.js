@@ -26,7 +26,9 @@ class FieldsService {
       is_marjor_key: params.isMarjorKey,
       is_foreign_key: params.isForeignKey,
       target_key: params.targetKey,
-      tb_id: params.tbId
+      tb_id: params.tbId,
+      allow_null: params.allowNull,
+      unique: params.unique,
     }
     const res = await Fields.create(newFd)
     return res.dataValues
@@ -53,8 +55,8 @@ class FieldsService {
     if (Array.isArray(data.targetKey)) {
       data.targetKey = JSON.stringify(data.targetKey)
     }
-    let propertyList = ['field', 'name', 'type', 'tbId', 'isMarjorKey', 'isForeignKey', 'targetKey']
-    let columnList = ['field', 'name', 'type', 'tb_id', 'is_marjor_key', 'is_foreign_key', 'target_key'] //字段意义和上面对应就行了
+    let propertyList = ['field', 'name', 'type', 'tbId', 'isMarjorKey', 'isForeignKey', 'targetKey', 'allowNull', 'unique']
+    let columnList = ['field', 'name', 'type', 'tb_id', 'is_marjor_key', 'is_foreign_key', 'target_key', 'allow_null', 'unique'] //字段意义和上面对应就行了
     let proj = {}
     for (let i in propertyList) {
       if (data[propertyList[i]] !== undefined) {

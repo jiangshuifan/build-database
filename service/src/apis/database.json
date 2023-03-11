@@ -3,9 +3,7 @@
     "api": "getList",
     "path": "list",
     "allParams": [],
-    "requiredParams": [
-      "id"
-    ],
+    "requiredParams": [],
     "desc": "获取数据库列表"
   },
   {

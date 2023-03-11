@@ -1,6 +1,6 @@
 <template>
   <div class="form-box">
-    <el-form class="form-body" v-model="fields">
+    <el-form ref="form" class="form-body" v-model="fields" v-bind="props.props">
       <el-form-item v-for="item in formConfig" :label="item.label">
         <el-input v-if="item.eType === 'input'" :disabled="computedConditions[`disable${item.field}`]"
           v-model="fields[item.field]" v-bind="item.props" />
@@ -38,11 +38,12 @@
 </template>
 
 <script setup lang="ts">
-import { toRefs, reactive, watch, computed, nextTick } from "vue"
+import { toRefs, reactive, ref, computed, nextTick } from "vue"
 import { deepClone } from "../utils/func";
 import request from "../utils/request"
 import { formConfigItem } from "../interface/form"
 
+let form = ref()
 
 
 let props = withDefaults(defineProps<{
@@ -55,7 +56,8 @@ let props = withDefaults(defineProps<{
     value: string,
     label: string
   },
-  initData?: { [property: string]: any }
+  initData?: { [property: string]: any },
+  props?: { [property: string]: any },
 }>(), {
   type: 'add',
   data: () => { return {} },
@@ -144,6 +146,24 @@ const getWholeConfig = async function (data: formConfigItem[]) {
       let FieldName = item.field
       computedConditions[`disable${FieldName}`] = computed(() => {
         let condition = item.appearWhen
+        let num = 0
+        for (let prop in condition) {
+          if (Object.hasOwn(reactiveData.fields, prop) && condition[prop] !== reactiveData.fields[prop]) {
+            num += 1
+            if (props.initData !== undefined) {
+              reactiveData.fields[FieldName] = props.initData[FieldName]
+            } else {
+              reactiveData.fields[FieldName] = ''
+            }
+          }
+        }
+        return num !== 0
+      })
+    }
+    if (Object.hasOwn(item, 'requiredWhen')) {
+      let FieldName = item.field
+      computedConditions[`required${FieldName}`] = computed(() => {
+        let condition = item.requiredWhen
         let num = 0
         for (let prop in condition) {
           if (Object.hasOwn(reactiveData.fields, prop) && condition[prop] !== reactiveData.fields[prop]) {

@@ -7,7 +7,7 @@
         <h1>FIELD</h1>
       </div>
       <div class="fd-tool">
-        <div @click="() => { handleOpenDialog('add') }">新建字段</div>
+        <el-button link @click="() => { handleOpenDialog('add') }">新建字段</el-button>
       </div>
 
     </el-header>
@@ -18,12 +18,12 @@
             :prop="column.field" :label="column.title"></el-table-column>
           <el-table-column width="130px" header-align="center" align="center">
             <template #default="scoped">
-              <el-button @click="() => { handleOpenDialog('edit', scoped.row) }" text><el-icon>
+              <el-button @click="() => { handleOpenDialog('edit', scoped.row) }" link><el-icon>
                   <Edit />
                 </el-icon></el-button>
               <el-button @click="() => {
                 handleRemoveField(scoped.row.id, scoped.$index as number)
-              }" text><el-icon>
+              }" link><el-icon>
                   <DeleteFilled />
                 </el-icon></el-button>
             </template>
@@ -45,6 +45,7 @@ import { dbField, tableFieldColumnList, TableField } from '../../database'
 import { getFieldFormConfig } from "../../interface/form"
 import Form from "../../components/form.vue"
 import { ElNotification } from "element-plus"
+import { deepClone } from "../../utils/func"
 
 import { useRouter } from "vue-router"
 
@@ -63,7 +64,9 @@ const pageData = reactive<pageInterface>({
 const formInitData = {
   isMarjorKey: 0,
   isForeignKey: 0,
-  targetKey: null
+  targetKey: null,
+  allowNull: 1,
+  unique: 0
 }
 const $router = useRouter()
 
@@ -76,11 +79,9 @@ const data = reactive({
 
 const { fields } = toRefs(pageData)
 let { initFieldsConfig } = toRefs(data)
-console.log(initFieldsConfig)
 let showFieldDialog = ref(false)
 
 const handleSave = async function (params: any) {
-  console.log(params)
   if (pageData.formType === "edit") {
     let res = await updateField(params)
     if (res.success) {
@@ -88,11 +89,7 @@ const handleSave = async function (params: any) {
         message: '字段数据更新成功！',
         type: "success"
       })
-      Object.keys(params).forEach((key) => {
-        pageData.formData[key] = params[key]
-      })
     }
-
   } else {
     params.tbId = tableId
     let res = await createField(params)
@@ -101,20 +98,22 @@ const handleSave = async function (params: any) {
         message: '字段新建成功！',
         type: "success"
       })
-      params.id = res.data.id
-      pageData.fields.push(params)
     }
   }
   showFieldDialog.value = false
+  pageData.fields = (await getFieldList(tableId)).data
 }
 
 const handleOpenDialog = function (type: "add" | "edit", data?: any) {
   showFieldDialog.value = true
   pageData.formType = type
+  data = deepClone(data)
   if (type === "edit") {
     data.targetKey = JSON.parse(data.targetKey)
     data.isForeignKey = data.isForeignKey === false ? 0 : 1
     data.isMarjorKey = data.isMarjorKey === false ? 0 : 1
+    data.allowNull = data.allowNull === false ? 0 : 1
+    data.unique = data.unique === false ? 0 : 1
     pageData.formData = data
   }
   editForm.value.init()
@@ -175,6 +174,7 @@ $padding: 10px;
     color: #333333;
     height: auto;
     display: flex;
+    padding: $gap;
     box-shadow: 0 0 $padding #33333344;
     // border-radius: $padding;
 
@@ -187,11 +187,12 @@ $padding: 10px;
 
     .fd-tool {
       flex: 1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      align-items: end;
+      justify-content: end;
 
 
-      & div {
+      & .el-button {
         font-weight: bold;
         display: grid;
         place-content: center;
@@ -253,10 +254,16 @@ $padding: 10px;
         .table-item {
           display: flex;
           align-items: center;
-          padding: 10px;
           border: 0.2px solid #33333333;
           margin-bottom: $padding;
+          padding-left: 10px;
+          padding-right: 10px;
           cursor: pointer;
+
+          .el-button {
+            padding-top: 10px;
+            padding-bottom: 10px;
+          }
 
           &:last-child {
             margin-bottom: $padding;

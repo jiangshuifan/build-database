@@ -26,7 +26,7 @@ const TbFields = seq.define(
     type: {
       type: DataTypes.STRING,
       allowNull: false,
-      comment: '字段名称·释义',
+      comment: '字段类型',
     },
     is_marjor_key: {
       type: DataTypes.BOOLEAN,
@@ -47,6 +47,16 @@ const TbFields = seq.define(
       type: DataTypes.NUMBER,
       allowNull: true,
       comment: '对应的主键的id',
+    },
+    allow_null: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      comment: '是否允许为空',
+    },
+    unique: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      comment: '是否唯一',
     }
   },
   {
