@@ -40,3 +40,8 @@ export const fuzzyQueryDbs = async function (keyword: string) {
   return await request.post<Database[]>('/database/fuzzy-query', { keyword })
 
 }
+
+export const downloadDbZip = async function (dbId: number, dbName: string) {
+  let blob = await request.post('/database/download-zip', { id: dbId }, "blob")
+  downloadBlobFile(blob, dbName + new Date().getTime() + '.zip')
+}

@@ -46,6 +46,13 @@
     "desc": "生成并下载数据库"
   },
   {
+    "api": "downloadDbZip",
+    "path": "download-zip",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "下载node初始化数据库的数据库表模型文件"
+  },
+  {
     "api": "fuzzyQueryDb",
     "path": "fuzzy-query",
     "allParams": [],

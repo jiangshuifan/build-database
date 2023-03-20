@@ -2,6 +2,7 @@ const { database, common } = require('../service/index')
 const { getAllDatabase, createDatabase, isDBNameRepeat, updateDatabase, deleteDatabaseById, getDbById, getDatabaseByName } = database
 const { getAllMarjorKeyAndForeignKeyByDBID, getAllTablesAndField } = common
 const { createDatabaseFile } = require('../utils/create-db')
+const { createDatabaseModelZip } = require('../utils/create-db-model-zip')
 const { removeDbError, queryError, addDbError, dbNameRepeatError, dbNameRepeatUpdateError, updateDbError } = require('../errors/database.err')
 const { formatReturn } = require('../utils/format')
 class DatabaseHandler {
@@ -73,9 +74,30 @@ class DatabaseHandler {
         relation,
         type: database.type
       })
-      console.log(relation)
       ctx.set('Content-Type', 'application/octet-stream')
       ctx.body = dbFile
+    } catch (error) {
+      console.log(error)
+      ctx.app.emit('error', queryError, ctx)
+    }
+  }
+  downloadDbZip = async (ctx) => {
+    try {
+      const db = ctx.request.body
+      let database = await getDbById(db.id)
+      let relation = await getAllMarjorKeyAndForeignKeyByDBID(db.id)
+      let tables = await getAllTablesAndField(db.id)
+      let data = await new Promise((resolve, reject) => {
+        createDatabaseModelZip({
+          tables,
+          relation,
+          type: database.type,
+          resolve,
+          reject
+        })
+      })
+      ctx.set('Content-Type', 'application/octet-stream')
+      ctx.body = data
     } catch (error) {
       console.log(error)
       ctx.app.emit('error', queryError, ctx)

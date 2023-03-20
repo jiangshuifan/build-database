@@ -110,6 +110,24 @@ let downloadDbMiddleware =async (ctx,next) =>{
 
 
 
+let downloadDbZipMiddleware =async (ctx,next) =>{
+  let params = ctx.request.body;
+  let requiredParamsList = []
+  let res = {
+    success:true
+  }
+  if(requiredParamsList.length>0){
+    res =await validateParams(params,requiredParamsList)
+  }
+  if (res.success) {
+    await next()
+  } else {
+    ctx.app.emit('error', '必要参数' + res.errParams + '缺失', ctx)
+  }
+}
+
+
+
 let fuzzyQueryDbMiddleware =async (ctx,next) =>{
   let params = ctx.request.body;
   let requiredParamsList = []
@@ -127,5 +145,5 @@ let fuzzyQueryDbMiddleware =async (ctx,next) =>{
 }
 
 module.exports = {
-getListMiddleware,addDbMiddleware,updateDbMiddleware,removeDbMiddleware,getAllFieldRelationMiddleware,downloadDbMiddleware,fuzzyQueryDbMiddleware
+getListMiddleware,addDbMiddleware,updateDbMiddleware,removeDbMiddleware,getAllFieldRelationMiddleware,downloadDbMiddleware,downloadDbZipMiddleware,fuzzyQueryDbMiddleware
 }

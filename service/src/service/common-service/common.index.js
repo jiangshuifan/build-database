@@ -41,7 +41,7 @@ class CrossTablesService {
     let defaultFiled = {
       field: 'id',
       name: 'id',
-      type: 'Number',
+      type: 'NUMBER',
       isMarjorKey: 1,
       isForeignKey: 0,
       tbId: id,
@@ -61,14 +61,14 @@ class CrossTablesService {
     let foreignFields = []
     for (let item of tables) {
       tbs[item.id] = item
-      let foreign = await Fields.findAll({
-        where: {
-          db_id: dbId,
-          is_foreign_key: true
-        }
-      })
-      foreignFields.push(...foreign)
     }
+    let foreign = await Fields.findAll({
+      where: {
+        db_id: dbId,
+        is_foreign_key: true
+      }
+    })
+    foreignFields.push(...foreign)
     if (foreignFields.length > 0) {
       foreignFields = await formatToNormalArray(foreignFields)
       for (let i = 0; i < foreignFields.length; i++) {
@@ -87,7 +87,9 @@ class CrossTablesService {
           foreignKeyName: key.field,
           marjorKeyName: currentField.field,
           foreignKeyTableName: tbs[key.tbId].name,
-          marjorKeyTableName: tbs[marjor[0]].name
+          marjorKeyTableName: tbs[marjor[0]].name,
+          foreignKeyType: tbs[key.tbId].type,
+          marjorKeyType: currentField.type,
         }
         target.push(item)
       }

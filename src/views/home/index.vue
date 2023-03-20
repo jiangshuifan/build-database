@@ -23,7 +23,8 @@
           <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
             <div style="width:200px;">{{ db.name }}</div>
             <div style="margin-left: 20px;">{{ db.type }}</div>
-            <el-button @click.stop="() => { handleDownloadDB(db) }" style="margin-left: auto;" link>
+            <el-button @click.stop="() => { handleDownloadZip(db) }" style="margin-left: auto;" link>zip</el-button>
+            <el-button @click.stop="() => { handleDownloadDB(db) }" link>
               <el-icon>
                 <Download />
               </el-icon></el-button>
@@ -44,7 +45,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
-import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs } from "../../api/database"
+import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs, downloadDbZip } from "../../api/database"
 import { ElNotification } from "element-plus"
 import { Database } from "../../database"
 import { formConfig } from "../../interface/form"
@@ -87,6 +88,9 @@ const handleCreateDB = async function () {
 }
 const handleDownloadDB = function (database: Database) {
   downloadDb(database.id as number, database.name)
+}
+const handleDownloadZip = function (database: Database) {
+  downloadDbZip(database.id as number, database.name)
 }
 //新建、完成编辑数据库
 const handleCreateNewTable = async function (data: any) {

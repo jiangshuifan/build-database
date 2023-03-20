@@ -6,15 +6,34 @@ let DB_STORE_PATH = path.resolve(__dirname, "../../database/data/index.db")
 
 const createDatabaseFile = async (props) => {
   let { type, tables, relation } = props
-  console.log(relation)
   const seq = new Sequelize({
     dialect: type,
     storage: DB_STORE_PATH,
   })
   let models = []
+  let tbs = {}
   tables.forEach(tb => {
     let model = defineModel(seq, tb, type)
+    tbs[tb.id] = model
     models.push(model)
+  })
+  relation.forEach(r => {
+    tbs[r.marjorKeyTable].hasMany(tbs[r.foreignKeyTable], {
+      onDelete: 'CASCADE',
+      foreignKey: {
+        type: DataTypes[type][r.foreignKeyType],
+        name: r.foreignKeyName,
+      },
+      sourceKey: r.marjorKeyName,
+    })
+    tbs[r.foreignKeyTable].belongsTo(tbs[r.marjorKeyTable], {
+      onDelete: 'CASCADE',
+      foreignKey: {
+        type: DataTypes[type][r.foreignKeyType],
+        name: r.foreignKeyName
+      },
+      targetKey: r.marjorKeyName,
+    });
   })
   for (let tableName in models) {
     await models[tableName].sync({ force: true })
