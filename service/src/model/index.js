@@ -1,4 +1,3 @@
-const Data = require('./table/Data.model');
 const Database = require('./table/Database.model');
 const Fields = require('./table/Fields.model');
 const Table = require('./table/Table.model');
@@ -20,11 +19,12 @@ Table.hasMany(Fields, {
   },
   sourceKey: 'id',
 });
-Table.hasMany(Data, {
+Database.hasMany(Fields, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'tb_id',
+    name: 'db_id',
+    //RESTRICT、CASCADE、NO ACTION、SET DEFAULT、SET NULL
   },
   sourceKey: 'id',
 });
@@ -48,13 +48,13 @@ Fields.belongsTo(Table, {
   },
   targetKey: 'id',
 });
-Data.belongsTo(Table, {
+Fields.belongsTo(Database, {
   onDelete: 'CASCADE',
   foreignKey: {
     type: DataTypes.INTEGER,
-    name: 'tb_id',
+    name: 'db_id',
+    //RESTRICT、CASCADE、NO ACTION、SET DEFAULT、SET NULL
   },
   targetKey: 'id',
 });
-
-module.exports = { Data, Database, Fields, Table };
+module.exports = { Database, Fields, Table };

@@ -29,6 +29,7 @@ class FieldsService {
       tb_id: params.tbId,
       allow_null: params.allowNull,
       unique: params.unique,
+      db_id: params.dbId
     }
     const res = await Fields.create(newFd)
     return res.dataValues

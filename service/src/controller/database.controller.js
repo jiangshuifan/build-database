@@ -73,6 +73,7 @@ class DatabaseHandler {
         relation,
         type: database.type
       })
+      console.log(relation)
       ctx.set('Content-Type', 'application/octet-stream')
       ctx.body = dbFile
     } catch (error) {

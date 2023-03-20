@@ -9,7 +9,7 @@
           <el-option v-for="option in item.data" :label="option.label" :value="option.value" />
         </el-select>
         <el-date-picker v-else-if="item.eType === 'date-picker'" :disabled="computedConditions[`disable${item.field}`]"
-          v-model="fields[item.field]" v-bind="item.props" type="date" placeholder="Pick a date" style="width: 100%" />
+          v-model="fields[item.field]" v-bind="item.props" placeholder="Pick a date" style="width: 100%" />
         <el-time-picker v-else-if="item.eType === 'time-picker'" :disabled="computedConditions[`disable${item.field}`]"
           v-model="fields[item.field]" v-bind="item.props" placeholder="Pick a time" style="width: 100%" />
         <el-switch v-else-if="item.eType === 'switch'" :disabled="computedConditions[`disable${item.field}`]"

@@ -1,12 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const { Blob } = require('buffer')
 const { Sequelize, DataTypes } = require('sequelize')
 //生成的数据库放这
 let DB_STORE_PATH = path.resolve(__dirname, "../../database/data/index.db")
 
 const createDatabaseFile = async (props) => {
   let { type, tables, relation } = props
+  console.log(relation)
   const seq = new Sequelize({
     dialect: type,
     storage: DB_STORE_PATH,
@@ -26,6 +26,7 @@ const createDatabaseFile = async (props) => {
 
 function defineModel(seq, table, type) {
   let option = defineField(table.children, type)
+  console.log(option)
   let Table = seq.define(
     table.name.toLocaleUpperCase(),
     option,

@@ -92,6 +92,7 @@ const handleSave = async function (params: any) {
     }
   } else {
     params.tbId = tableId
+    params.dbId = databaseId
     let res = await createField(params)
     if (res.success) {
       ElNotification({

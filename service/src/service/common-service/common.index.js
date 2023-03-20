@@ -47,7 +47,8 @@ class CrossTablesService {
       tbId: id,
       targetKey: null,
       allowNull: false,
-      unique: true
+      unique: true,
+      dbId: data.dbId
     }
     await createField(defaultFiled)
     return res
@@ -55,35 +56,43 @@ class CrossTablesService {
   //获得一个数据库下所有主键、外键对应关系
   getAllMarjorKeyAndForeignKeyByDBID = async (dbId) => {
     let target = []
+    let tbs = {}
     let tables = await getAllTable(dbId)
+    let foreignFields = []
     for (let item of tables) {
-      //拿到各表的主键id
-      let marjor = await Fields.findAll({
-        where: {
-          tb_id: item.id,
-          is_marjor_key: true
-        }
-      })
-      marjor = (await formatToNormalArray(marjor))[0]
-
+      tbs[item.id] = item
       let foreign = await Fields.findAll({
         where: {
-          target_key: JSON.stringify([marjor.tbId, marjor.id])
+          db_id: dbId,
+          is_foreign_key: true
         }
       })
-      foreign = await formatToNormalArray(foreign)
-      foreign.forEach(key => {
+      foreignFields.push(...foreign)
+    }
+    if (foreignFields.length > 0) {
+      foreignFields = await formatToNormalArray(foreignFields)
+      for (let i = 0; i < foreignFields.length; i++) {
+        let key = foreignFields[i]
+        let marjor = JSON.parse(key.targetKey)
+        let currentField = await Fields.findOne({
+          where: {
+            id: marjor[1]
+          }
+        })
         let item = {
-          marjorKeyTable: marjor.tbId,
+          marjorKeyTable: marjor[0],
           foreignKeyTable: key.tbId,
-          marjorKeyField: marjor.id,
+          marjorKeyField: marjor[1],
           foreignKeyField: key.id,
           foreignKeyName: key.field,
-          marjorKeyName: marjor.field
+          marjorKeyName: currentField.field,
+          foreignKeyTableName: tbs[key.tbId].name,
+          marjorKeyTableName: tbs[marjor[0]].name
         }
         target.push(item)
-      })
+      }
     }
+    //JSON.stringify([marjor.tbId, marjor.id])
     return target
   }
   //创建、更新字段，设置了主外键，先判断是否需要更新主外键表

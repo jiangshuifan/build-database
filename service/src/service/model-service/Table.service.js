@@ -16,7 +16,14 @@ class TableService {
     tables = await formatToNormalArray(tables)
     return tables
   }
-
+  getTargetTable = async (tableId) => {
+    let table = await Table.findOne({
+      where: {
+        id: tableId,
+      }
+    })
+    return table.dataValues
+  }
   //新建
   createTable = async (data) => {
     const newTb = {

@@ -57,7 +57,12 @@ const TbFields = seq.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       comment: '是否唯一',
-    }
+    },
+    db_id: {
+      type: DataTypes.NUMBER,
+      allowNull: false,
+      comment: '数据库id,外键',
+    },
   },
   {
     //设置表名.不设置默认会生成模型名称的复数，也可以通过const sequelize = new Sequelize('sqlite::memory:', { define: {freezeTableName: true}})关闭自动生成复数
