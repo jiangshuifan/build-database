@@ -1,4 +1,4 @@
-const { camelCase } = require('camel-case');
+const camelCase = require('camelcase');
 class CommonFunction {
   //对象变量转驼峰
   async formatObjPropertyToCamelCase(obj) {

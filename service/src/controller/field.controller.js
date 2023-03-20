@@ -9,7 +9,6 @@ class FieldHandler {
     try {
       let fd = ctx.request.body
       let tbs = await getAllField(fd.tbId)
-      console.log(tbs)
       ctx.body = formatReturn(true, tbs)
     } catch (err) {
       console.log(err)

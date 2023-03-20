@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const archiver = require('archiver');
-
+const camelCase = require('camelcase')
 const render = require('json-templater/string');
 let endOfLine = require('os').EOL;
 
@@ -26,17 +26,18 @@ const FieldTemplate = `
     type: {{fieldType}},
     allowNull: {{fieldAllowNull}},
     unique: {{fieldUnique}},
-    comment: {{comment}}
+    comment: '{{comment}}'
   }
 `
 //数据库表模板
 const TableTemplate = `
   const seq = require('./instance.js')
+  const { DataTypes } = require('sequelize'); 
   const {{tableUpperName}} = seq.define(
-    {{tableUpperName}},
+    '{{tableUpperName}}',
     {{fieldOptions}},
     {
-      tableName: {{tableLowerName}},
+      tableName: '{{tableLowerName}}',
       timestamps: false,
     }
   )
@@ -80,14 +81,14 @@ const createDatabaseModelZip = async (props) => {
   //table.model.js
   tables.forEach(tb => {
     let propertiesList = []
-    let upperName = tb.name.toLocaleUpperCase()
-    requireList.push(`const ${upperName} = require('./${upperName}.model'); `)
+    let upperName = camelCase(tb.name, { pascalCase: true })
+    requireList.push(`const ${upperName} = require('./${upperName}.model');`)
     exportList.push(upperName)
     tb.children.forEach(fd => {
       if (fd.field !== 'id') {
         propertiesList.push(render(FieldTemplate, {
           field: fd.field,
-          fieldType: fd.type,
+          fieldType: fd.type ? 'DataTypes.' + fd.type : undefined,
           fieldAllowNull: fd.allowNull,
           fieldUnique: fd.unique,
           comment: fd.name
@@ -97,7 +98,7 @@ const createDatabaseModelZip = async (props) => {
     fileList.push({
       fileName: `${upperName}.model.js`,
       content: render(TableTemplate, {
-        tableUpperName: tb.name.toLocaleUpperCase(),
+        tableUpperName: camelCase(tb.name, { pascalCase: true }),
         fieldOptions: `{${propertiesList.join(',', endOfLine)}}`,
         tableLowerName: tb.name.toLocaleLowerCase()
       })
@@ -106,13 +107,13 @@ const createDatabaseModelZip = async (props) => {
 
   })
   relation.forEach(r => {
-    let upperForeignKeyTableName = r.foreignKeyTableName.toLocaleUpperCase()
-    let upperMarjorKeyTableName = r.marjorKeyTableName.toLocaleUpperCase()
+    let upperForeignKeyTableName = camelCase(r.foreignKeyTableName, { pascalCase: true })
+    let upperMarjorKeyTableName = camelCase(r.marjorKeyTableName, { pascalCase: true })
     belongToList.push(
       `${upperForeignKeyTableName}.belongsTo(${upperMarjorKeyTableName}, {
         onDelete: 'CASCADE',
         foreignKey: {
-          type: ${r.foreignKeyType ? `DataTypes.` + r.foreignKeyType : undefined},
+          type: ${r.foreignKeyType ? 'DataTypes.' + r.foreignKeyType : undefined},
           name: '${r.foreignKeyName}'
         },
         targetKey: '${r.marjorKeyName}',
@@ -122,7 +123,7 @@ const createDatabaseModelZip = async (props) => {
       `${upperMarjorKeyTableName}.hasMany(${upperForeignKeyTableName}, {
         onDelete: 'CASCADE',
         foreignKey: {
-          type: ${r.foreignKeyType ? `DataTypes.` + r.foreignKeyType : undefined},
+          type: ${r.foreignKeyType ? 'DataTypes.' + r.foreignKeyType : undefined},
           name: '${r.foreignKeyName}',
         },
         sourceKey: '${r.marjorKeyName}',

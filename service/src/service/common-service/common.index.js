@@ -41,7 +41,7 @@ class CrossTablesService {
     let defaultFiled = {
       field: 'id',
       name: 'id',
-      type: 'NUMBER',
+      type: 'INTEGER',
       isMarjorKey: 1,
       isForeignKey: 0,
       tbId: id,

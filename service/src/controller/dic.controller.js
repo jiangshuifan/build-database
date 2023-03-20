@@ -9,8 +9,15 @@ class DictionaryHandler {
       const { dbId } = ctx.request.body
       let database = await getDbById(dbId)
       let dicList = []
-      Object.keys(DataTypes[database.type]).forEach((key, index) => {
-        dicList.push({ id: index, value: key, label: key })
+      let ind = 1
+      Object.keys(DataTypes).forEach((key) => {
+        if (key.charCodeAt(0) < 97) {
+          if (Object.hasOwn(DataTypes[key].types, database.type)) {
+            console.log(Object.hasOwn(DataTypes[key].types, database.type), key, DataTypes[key].types)
+            dicList.push({ id: ind, value: key, label: key })
+            ind++
+          }
+        }
       })
       ctx.body = formatReturn(true, dicList)
     }
@@ -22,7 +29,10 @@ class DictionaryHandler {
     try {
       const { dbId, tbId } = ctx.request.body
       let dicData = await getTablesAndFields(dbId, tbId)
-      ctx.body = formatReturn(true, formatDic(dicData, { label: 'name', value: 'id' }))
+      dicData.forEach(item => {
+        item.field = item.name
+      })
+      ctx.body = formatReturn(true, formatDic(dicData, { label: 'field', value: 'id' }))
     } catch (err) {
       console.log(err)
     }

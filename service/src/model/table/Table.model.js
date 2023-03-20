@@ -19,7 +19,7 @@ const DBTable = seq.define(
       comment: '表名称',
     },
     db_id: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: '数据库id,外键',
     },

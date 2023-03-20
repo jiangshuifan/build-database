@@ -39,12 +39,12 @@ const TbFields = seq.define(
       comment: '外键',
     },
     tb_id: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: '数据库表id,外键',
     },
     target_key: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: true,
       comment: '对应的主键的id',
     },
@@ -59,7 +59,7 @@ const TbFields = seq.define(
       comment: '是否唯一',
     },
     db_id: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       allowNull: false,
       comment: '数据库id,外键',
     },
