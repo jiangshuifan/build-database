@@ -1,5 +1,5 @@
 
-type type = 'Postgres' | 'MySQL' | 'MariaDB' | 'SQLite' | 'MicrosoftSQLServe'
+type type = 'mysql' | 'postgres' | 'sqlite' | 'mariadb' | 'mssql'
 
 
 
@@ -59,7 +59,7 @@ export class Database {
   }
   id: undefined | number = undefined
   name: string = ""
-  type: type = 'MySQL'
+  type: type = 'mysql'
   description: string = ''
 }
 export class DatabaseTable {

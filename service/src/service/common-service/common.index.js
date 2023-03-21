@@ -79,6 +79,7 @@ class CrossTablesService {
             id: marjor[1]
           }
         })
+        console.log(key.tbId,)
         let item = {
           marjorKeyTable: marjor[0],
           foreignKeyTable: key.tbId,
@@ -88,7 +89,7 @@ class CrossTablesService {
           marjorKeyName: currentField.field,
           foreignKeyTableName: tbs[key.tbId].name,
           marjorKeyTableName: tbs[marjor[0]].name,
-          foreignKeyType: tbs[key.tbId].type,
+          foreignKeyType: key.type,
           marjorKeyType: currentField.type,
         }
         target.push(item)
