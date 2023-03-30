@@ -2,43 +2,67 @@
 
 <template>
   <el-container class="content-container">
-    <el-header class="db-header">
-      <div>
-        <h1 class="db-title">DATABASE</h1>
-      </div>
-      <div class="db-tool">
-        <el-button link @click="() => { handleCreateDB() }">新建数据库</el-button>
-      </div>
-    </el-header>
     <el-main>
       <div class="content-main">
+        <h1>
+          <span>数据库管理</span>
+        </h1>
         <div class="db-query">
-          <el-input v-model="inputText"> <template #append>
+          <el-input v-model="inputText" placeholder="查找数据库名称"> <template #append>
               <el-button @click="handleFuzzyQuery"><el-icon>
                   <Search />
                 </el-icon></el-button>
             </template></el-input>
+          <el-tooltip placement="left" content="新建数据库" effect="dark">
+            <el-button circle style="margin-left: auto;" @click="() => { handleCreateDB() }"><el-icon>
+                <Plus />
+              </el-icon></el-button>
+          </el-tooltip>
         </div>
         <div class="db-list">
-          <div v-for="(db, index) in database" @click="() => { handleViewDB(db.id as number) }" class="db-item">
-            <div style="width:200px;">{{ db.name }}</div>
-            <div style="margin-left: 20px;">{{ db.type }}</div>
-            <el-button @click.stop="() => { handleDownloadZip(db) }" style="margin-left: auto;" link>zip</el-button>
-            <el-button @click.stop="() => { handleDownloadDB(db) }" link>
-              <el-icon>
-                <Download />
-              </el-icon></el-button>
-            <el-button @click.stop="() => { handleDeleteDB(db.id as number, index) }" link><el-icon>
-                <DeleteFilled />
-              </el-icon></el-button>
-            <el-button @click.stop="() => { handleEditDB(db) }" link><el-icon>
-                <Edit />
-              </el-icon></el-button>
+          <div v-for="(db, index) in database" :style="{ 'background-color': colors[index % colors.length] }"
+            @click="() => { handleViewDB(db.id as number) }" class="db-item">
+            <div style="display: flex;align-items: center;position: relative;;height:100%;">
+              <div style="margin-left: 16px;">
+                <div style="font-size: 30px;">
+                  {{ db.name }}
+                </div>
+                <p style="font-size:13px;color: #ccc;">2021-2</p>
+              </div>
+            </div>
+            <div class="db-mask">
+              <div class="item-tool">
+                <el-button @click.stop="() => { handleDownloadZip(db) }" circle><el-icon>
+                    <Files />
+                  </el-icon></el-button>
+                <el-button @click.stop="() => { handleDownloadDB(db) }" circle>
+                  <el-icon>
+                    <Download />
+                  </el-icon></el-button>
+                <el-button circle @click.stop="() => { handleDeleteDB(db.id as number, index, db.name) }"><el-icon>
+                    <DeleteFilled />
+                  </el-icon></el-button>
+                <el-button circle @click.stop="() => { handleEditDB(db) }"><el-icon>
+                    <Edit />
+                  </el-icon></el-button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="content-aside">
-        <Form ref="editform" :type="formType" :data="formData" @save="handleCreateNewTable" :config="initDBConfig"></Form>
+        <div class="content-aside" v-show="isOpen">
+          <h1 style="margin:20px 0;padding: 0;">
+            <span>
+              {{ `数据库${formType === 'add' ? '新建' : '编辑'}` }}
+            </span>
+            <el-button style="margin-left:auto ;" circle @click="handleHiddenForm"><el-icon>
+                <CloseBold />
+              </el-icon></el-button>
+          </h1>
+          <div style="flex:1;overflow: auto;">
+            <Form ref="editform" :type="formType" :data="formData" @save="handleCreateNewTable" :config="initDBConfig">
+            </Form>
+          </div>
+        </div>
       </div>
     </el-main>
   </el-container>
@@ -46,20 +70,20 @@
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
 import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs, downloadDbZip } from "../../api/database"
-import { ElNotification } from "element-plus"
+import { ElNotification, ElMessageBox } from "element-plus"
 import { Database } from "../../database"
-import { formConfig } from "../../interface/form"
-import Form from "../../components/form.vue"
-
+import { formConfig } from "@/interface/form"
+import Form from "@/components/form.vue"
+import { randowArray } from "@/utils/func"
 //路由
 import { useRouter } from "vue-router"
-
 const editform = ref()
-
 const inputText = ref('')
 
+let colors: readonly string[] = randowArray(['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'])
 const $router = useRouter()
 interface pageInterface {
+  isOpen: boolean,
   formType: 'add' | 'edit',
   formData: { [property: string]: any },
   database: Database[]
@@ -68,22 +92,28 @@ const data = reactive({
   ...new formConfig()
 })
 const pageData = reactive<pageInterface>({
+  isOpen: false,
   formType: 'add',
   formData: {},
   database: []
 })
 let { initDBConfig } = toRefs(data)
-let { formData, formType, database } = toRefs(pageData)
+let { formData, formType, database, isOpen } = toRefs(pageData)
 let showTableDialog = ref(false)
 //打开编辑、新增数据库窗口
 const handleEditDB = async function (db: any) {
   pageData.formType = "edit"
+  pageData.isOpen = true
   showTableDialog.value = true
   pageData.formData = db
   editform.value.init()
 }
+const handleHiddenForm = function () {
+  pageData.isOpen = false
+}
 const handleCreateDB = async function () {
   pageData.formType = "add"
+  pageData.isOpen = true
   editform.value.init()
 }
 const handleDownloadDB = function (database: Database) {
@@ -129,28 +159,41 @@ const handleFuzzyQuery = async function () {
 }
 
 //移除数据库
-const handleDeleteDB = async function (id: number | string, index: number) {
-  let res = await deleteDatabase(id)
-  if (res.success) {
+const handleDeleteDB = async function (id: number | string, index: number, dbName: string) {
+  ElMessageBox.confirm("将删除当前数据库及其下面所有表格数据，是否继续？", `当前数据库：${dbName}`, {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  }).then(async () => {
+    let res = await deleteDatabase(id)
+    if (res.success) {
+      ElNotification({
+        message: '数据库删除成功！',
+        type: 'success'
+      })
+      pageData.database.splice(index, 1)
+    } else {
+      ElNotification({
+        message: '数据库删除失败！',
+        type: 'error'
+      })
+    }
+  }).catch(() => {
     ElNotification({
-      message: '数据库删除成功！',
-      type: 'success'
+      message: '操作取消！',
+      type: "info"
     })
-    pageData.database.splice(index, 1)
-  } else {
-    ElNotification({
-      message: '数据库删除失败！',
-      type: 'error'
-    })
-  }
+  })
+
 }
 
 const handleViewDB = function (id: number | string) {
+  let params = {
+    database: id,
+  }
   $router.push({
     name: 'tables',
-    params: {
-      database: id
-    }
+    params
   })
 }
 
@@ -164,99 +207,118 @@ $gap: 30px;
 $padding: 10px;
 
 .content-container {
-  flex-direction: column;
   height: 100%;
-  font-family: 'Ma Shan Zheng';
-
-  :deep(.el-header) {
-    height: 160px !important;
-    background-color: #fff;
-    color: #333333;
-    height: auto;
-    display: flex;
-    box-shadow: 0 0 $padding #33333344;
-    padding: $gap;
-    // border-radius: $padding;
-
-    & div:first-child {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center
-    }
-
-    .db-tool {
-      flex: 1;
-      display: flex;
-      align-items: end;
-      justify-content: end;
-
-      & .el-button {
-        font-weight: bold;
-        cursor: pointer;
-
-        &:hover {
-          background-color: inherit;
-        }
-      }
-    }
-  }
+  padding: 10px;
 
   :deep(.el-main) {
     padding: 0;
     display: flex;
     overflow: auto;
-    padding: $gap;
-
-
+    flex-direction: column;
 
     .content-main {
-      flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #fff;
-      box-shadow: 0 0 $padding #33333344;
       overflow: auto;
-      // border-radius: $padding;
-      padding: 20px;
+      position: relative;
 
+      h1 {
+        padding-left: 20px;
+        padding-right: 20px;
+        margin: 0;
+        display: flex;
+        white-space: nowrap;
+        margin-top: 20px;
+      }
 
       .db-query {
         // background-color: #6f6f6f;
-        padding: 20px;
+        padding: 0 20px;
+        margin: 20px 0;
+        display: flex;
 
         .el-input {
           outline: none;
-          border-radius: 0;
+          width: 560px;
+          height: 36px;
 
+
+          // border-radius: 8px;
           .el-input__wrapper {
-            border-radius: 0;
+            border-top-left-radius: 16px;
+            border-bottom-left-radius: 16px;
+            padding: 0 16px;
+            background-color: #e9e9e9;
+          }
 
-            &.is-focus {
-              box-shadow: 0 0 0 1px #dcdfe6 inset;
+          .el-input__wrapper.is-focus {
+            background-color: #383838;
+            box-shadow: 0 0 0 1px #383838 inset;
+
+            &+.el-input-group__append {
+              background-color: #383838;
+              box-shadow: 1px 0 0 1px #383838 inset;
             }
           }
-        }
 
-        .el-input-group__append {
-          border-radius: 0;
+          .el-input-group__append {
+            border-top-right-radius: 16px;
+            border-bottom-right-radius: 16px;
+          }
         }
-
       }
 
       .db-list {
-        height: 100%;
-        padding: 20px;
-        background-color: #fff;
+        flex: 1;
+        overflow: auto;
+        padding: 0 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 240px);
+        column-gap: 25px;
+        row-gap: 25px;
 
         .db-item {
-          display: flex;
-          align-items: center;
-          border: 0.2px solid #33333333;
-          margin-bottom: $padding;
-          padding-left: 10px;
-          padding-right: 10px;
+          height: 240px;
+          display: inline-flex;
+          position: relative;
+          flex-direction: column;
+          color: #fff;
+          border-radius: $padding;
+          padding: 0 20px;
           cursor: pointer;
+          overflow: hidden;
+
+
+
+          .db-mask {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+
+            .item-tool {
+              position: absolute;
+              bottom: 0;
+              padding: 20px;
+              width: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: flex-end;
+              visibility: hidden;
+            }
+          }
+
+          &:hover {
+            .item-tool {
+              visibility: visible;
+            }
+
+            .db-mask {
+              background-color: rgba(0, 0, 0, 0.4);
+            }
+          }
+
 
           .el-button {
             padding-top: 10px;
@@ -278,11 +340,15 @@ $padding: 10px;
     }
 
     .content-aside {
-      width: 300px;
-      margin-left: $gap;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
       background-color: #fff;
-      box-shadow: 0 0 $padding #33333344;
-      padding: 20px;
+      padding: 0 20px;
       overflow: auto;
       // border-radius: $padding;
     }

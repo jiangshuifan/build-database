@@ -72,7 +72,7 @@ const createDatabaseModelZip = async (props) => {
   let { type, tables, relation, resolve, reject } = props
   //instance.js
   fileList.push({
-    fileName: 'insance.js',
+    fileName: 'instance.js',
     content: render(instanceTemplate, {
       type: type,
     })

@@ -94,7 +94,6 @@ class DatabaseService {
         }
       },
     })
-    console.log(res)
     res = await formatToNormalArray(res)
     return res
   }

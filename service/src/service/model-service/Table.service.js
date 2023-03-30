@@ -16,6 +16,15 @@ class TableService {
     tables = await formatToNormalArray(tables)
     return tables
   }
+  getAllTableByName = async (dbName) => {
+    let tables = await Table.findAll({
+      where: {
+        name: dbName,
+      }
+    })
+    tables = await formatToNormalArray(tables)
+    return tables
+  }
   getTargetTable = async (tableId) => {
     let table = await Table.findOne({
       where: {
@@ -82,6 +91,20 @@ class TableService {
         },
       })
     }
+  }
+  //模糊查询
+  getTableByName = async (dbId, name) => {
+    let res = await Table.findAll({
+      where: {
+        db_id: dbId,
+        name: {
+          [Op.substring]: name
+        }
+      },
+    })
+    console.log(res)
+    res = await formatToNormalArray(res)
+    return res
   }
 }
 

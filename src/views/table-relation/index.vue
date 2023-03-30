@@ -102,7 +102,6 @@ onMounted(async () => {
         let color = colors[categoryInd % (colors.length)] + '66'
         //使用图形元素组件在节点上划出一个隐形的图形覆盖住节点
         var tmpPos = chart.convertToPixel({ 'seriesIndex': 0 }, [item.x, item.y]);
-        console.log(invisible)
         return {
           type: 'circle',
           id: item.id,

@@ -2,23 +2,22 @@
 
 <template>
   <el-container class="content-container">
-    <el-header>
-      <div>
-        <h1>FIELD</h1>
-      </div>
-      <div class="fd-tool">
-        <el-button link @click="() => { handleOpenDialog('add') }">新建字段</el-button>
-      </div>
-
-    </el-header>
-    <el-main style="flex: 1;">
+    <el-main>
       <div class="content-main">
-        <el-table :data="fields" border style="width: 100%">
+        <h1>
+          <span>字段管理</span>
+          <el-tooltip placement="left" content="新建字段" effect="dark">
+            <el-button circle style="margin-left: auto;" @click="() => { handleOpenForm('add') }"><el-icon>
+                <Plus />
+              </el-icon></el-button>
+          </el-tooltip>
+        </h1>
+        <el-table :data="fields" border class="field-table">
           <el-table-column v-for="column in tableFieldColumnList" header-align="center" align="center"
             :prop="column.field" :label="column.title"></el-table-column>
           <el-table-column width="130px" header-align="center" align="center">
             <template #default="scoped">
-              <el-button @click="() => { handleOpenDialog('edit', scoped.row) }" link><el-icon>
+              <el-button @click="() => { handleOpenForm('edit', scoped.row) }" link><el-icon>
                   <Edit />
                 </el-icon></el-button>
               <el-button @click="() => {
@@ -30,7 +29,17 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="content-aside">
+      <div class="content-aside" v-show="pageData.isOpen">
+        <h1 style="margin:20px 0;padding: 0;display: flex;">
+          <span>
+            {{ `字段${pageData.formType === 'add' ? '新建' : '编辑'}` }}
+          </span>
+          <el-tooltip content="关闭" placement="left">
+            <el-button style="margin-left:auto ;" circle @click="handleHiddenForm"><el-icon>
+                <CloseBold />
+              </el-icon></el-button>
+          </el-tooltip>
+        </h1>
         <Form ref="editForm" :type="pageData.formType" :init-data="formInitData" :data="pageData.formData"
           @save="handleSave" :config="initFieldsConfig">
         </Form>
@@ -51,12 +60,14 @@ import { useRouter } from "vue-router"
 
 
 interface pageInterface {
+  isOpen: boolean,
   formType: 'add' | 'edit',
   formData: { [property: string]: any },
   fields: TableField[]
 }
 const editForm = ref()
 const pageData = reactive<pageInterface>({
+  isOpen: false,
   formType: 'add',
   formData: {},
   fields: []
@@ -107,10 +118,13 @@ const handleSave = async function (params: any) {
   showFieldDialog.value = false
   pageData.fields = (await getFieldList(tableId)).data
 }
-
-const handleOpenDialog = function (type: "add" | "edit", data?: any) {
+const handleHiddenForm = function () {
+  pageData.isOpen = false
+}
+const handleOpenForm = function (type: "add" | "edit", data?: any) {
   showFieldDialog.value = true
   pageData.formType = type
+  pageData.isOpen = true
   data = deepClone(data)
   if (type === "edit") {
     data.targetKey = JSON.parse(data.targetKey)
@@ -140,154 +154,56 @@ onBeforeMount(async () => {
 })
 </script>
 <style lang="scss" scoped>
-.database-card {
-  width: 300px;
-  display: inline-block;
-
-  :deep(.el-card__body) {
-    padding: 0
-  }
-
-  .card-header {
-    display: flex;
-  }
-
-  .card-field {
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-
-    &:hover {
-      background-color: rgb(219, 219, 219);
-    }
-  }
-}
-
 $gap: 30px;
 $padding: 10px;
 
 .content-container {
-  flex-direction: column;
   height: 100%;
-
-  font-family: 'Ma Shan Zheng';
-
-  :deep(.el-header) {
-    height: 160px !important;
-    background-color: #fff;
-    color: #333333;
-    height: auto;
-    display: flex;
-    padding: $gap;
-    box-shadow: 0 0 $padding #33333344;
-    // border-radius: $padding;
-
-    & div:first-child {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center
-    }
-
-    .fd-tool {
-      flex: 1;
-      display: flex;
-      align-items: end;
-      justify-content: end;
-
-
-      & .el-button {
-        font-weight: bold;
-        display: grid;
-        place-content: center;
-        cursor: pointer;
-
-        &:hover {
-          background-color: inherit;
-        }
-      }
-    }
-  }
+  padding: 10px;
 
   :deep(.el-main) {
-    display: flex;
+    padding: 0;
     overflow: auto;
-    padding: $gap;
-
+    position: relative;
 
     .content-main {
-      flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #fff;
-      box-shadow: 0 0 $padding #33333344;
       overflow: auto;
-      // border-radius: $padding;
-      padding: 20px;
 
-
-      .db-query {
-        // background-color: #6f6f6f;
-        padding: 20px;
-
-        .el-input {
-          outline: none;
-          border-radius: 0;
-
-          .el-input__wrapper {
-            border-radius: 0;
-
-            &.is-focus {
-              box-shadow: 0 0 0 1px #dcdfe6 inset;
-            }
-          }
-        }
-
-        .el-input-group__append {
-          border-radius: 0;
-        }
-
+      h1 {
+        padding-left: 20px;
+        padding-right: 20px;
+        margin: 0;
+        display: flex;
+        white-space: nowrap;
+        margin-top: 20px;
       }
 
-      .tb-list {
-        height: 100%;
-        padding: 20px;
-        background-color: #fff;
-        overflow: auto;
-
-        .table-item {
-          display: flex;
-          align-items: center;
-          border: 0.2px solid #33333333;
-          margin-bottom: $padding;
-          padding-left: 10px;
-          padding-right: 10px;
-          cursor: pointer;
-
-          .el-button {
-            padding-top: 10px;
-            padding-bottom: 10px;
-          }
-
-          &:last-child {
-            margin-bottom: $padding;
-          }
-        }
+      .field-table {
+        width: 100%;
+        margin-top: 20px;
       }
 
 
     }
 
     .content-aside {
-      width: 300px;
-      margin-left: $gap;
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
       background-color: #fff;
-      box-shadow: 0 0 $padding #33333344;
-      padding: 20px;
-      // border-radius: $padding;
+      padding: 0 20px;
       overflow: auto;
+      z-index: 99;
     }
   }
+
+
 }
 
 .three-d-font-effect {

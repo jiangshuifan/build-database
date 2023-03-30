@@ -3,8 +3,19 @@
     "api": "getList",
     "path": "list",
     "allParams": [],
-    "requiredParams": [],
+    "requiredParams": [
+      "dbId"
+    ],
     "desc": "获取表格列表"
+  },
+  {
+    "api": "getListByName",
+    "path": "list-byname",
+    "allParams": [],
+    "requiredParams": [
+      "dbName"
+    ],
+    "desc": "获取表格列表通过数据库名称"
   },
   {
     "api": "addTb",
@@ -33,5 +44,15 @@
     "allParams": [],
     "requiredParams": [],
     "desc": "表格+字段树结构"
+  },
+  {
+    "api": "fuzzyQueryTb",
+    "path": "fuzzy-query",
+    "allParams": [],
+    "requiredParams": [
+      "dbId",
+      "keyword"
+    ],
+    "desc": "模糊查询表格"
   }
 ]

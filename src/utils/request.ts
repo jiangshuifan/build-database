@@ -17,7 +17,6 @@ interface IOpts {
 }
 
 export class Request {
-
   private request<T>(opts: IOpts) {
     const instance: AxiosInstance = axios.create({
       baseURL: '/api/',

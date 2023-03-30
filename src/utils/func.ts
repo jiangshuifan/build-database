@@ -27,7 +27,7 @@ export const getTableColumns = function (array: dbField[]) {
   }, [])
 }
 
-
+//深拷贝
 export const deepClone = function (obj: any) {
   let objClone: any = Array.isArray(obj) ? [] : {};
   if (obj && typeof obj === "object") {
@@ -44,4 +44,24 @@ export const deepClone = function (obj: any) {
     }
   }
   return objClone;
+}
+//随机颜色
+export const randomColor = function (): number[] {
+  let colorArray = [Math.round(Math.random() * 255), Math.round(Math.random() * 255), Math.round(Math.random() * 255)]
+  let Indexzero = Math.floor(Math.random() * 3)
+  let Index255 = (Indexzero + Math.ceil(Math.random() * 2)) % 3
+  colorArray[Indexzero] = 0
+  colorArray[Index255] = 255
+  return colorArray
+}
+
+//随机打乱数组
+export const randowArray = (arr: any[]) => {
+  for (let i = arr.length - 1; i >= 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    let middle = arr[j]
+    arr[j] = arr[i]
+    arr[i] = middle
+  }
+  return arr
 }

@@ -1,5 +1,7 @@
 
-import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw, RouteLocationNormalized, NavigationFailure, } from 'vue-router'
+import { useBaseStore } from '@/store/index'
+
 const routes: Array<RouteRecordRaw> = [
   {
     name: 'base',
@@ -30,6 +32,15 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.afterEach((to, from, failure) => {
+  const store = useBaseStore()
+  if (to.path === "/") {
+    store.isRoot = true
+  } else {
+    store.isRoot = false
+  }
 })
 
 export default router

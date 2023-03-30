@@ -19,13 +19,13 @@ const createDatabaseFile = async (props) => {
       storage: DB_STORE_PATH,
     })
   }
-  seq.authenticate().complete(function (err) {
-    if (err) {
-      console.log('There is connection in ERROR');
-    } else {
-      console.log('Connection has been established successfully');
-    }
-  });
+  // seq.authenticate().complete(function (err) {
+  //   if (err) {
+  //     console.log('There is connection in ERROR');
+  //   } else {
+  //     console.log('Connection has been established successfully');
+  //   }
+  // });
 
   let models = []
   let tbs = {}

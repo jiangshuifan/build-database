@@ -38,7 +38,6 @@ export const downloadDb = async function (dbId: number, dbName: string) {
 
 export const fuzzyQueryDbs = async function (keyword: string) {
   return await request.post<Database[]>('/database/fuzzy-query', { keyword })
-
 }
 
 export const downloadDbZip = async function (dbId: number, dbName: string) {

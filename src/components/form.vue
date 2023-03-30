@@ -28,7 +28,7 @@
           v-model="fields[item.field]" :data="item.data" />
       </el-form-item>
     </el-form>
-    <div>
+    <div style="display: flex;justify-content: flex-end;">
       <el-button @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="handleConfirm">
         确定
