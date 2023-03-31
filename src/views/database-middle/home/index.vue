@@ -69,9 +69,9 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
-import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs, downloadDbZip } from "../../api/database"
+import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs, downloadDbZip } from "@/api/database"
 import { ElNotification, ElMessageBox } from "element-plus"
-import { Database } from "../../database"
+import { Database } from "@/database"
 import { formConfig } from "@/interface/form"
 import Form from "@/components/form.vue"
 import { randowArray } from "@/utils/func"

@@ -24,7 +24,7 @@
 
     </div>
     <div class="app-menu">
-      <el-menu default-active="list">
+      <el-menu :default-active="activeItem" @select="handleSelect">
         <el-menu-item index="list">
           <el-icon>
             <Menu />
@@ -37,7 +37,7 @@
           </el-icon>
           <span>个人中心</span>
         </el-menu-item>
-        <el-menu-item index="4">
+        <el-menu-item index="setting">
           <el-icon>
             <setting />
           </el-icon>
@@ -57,6 +57,7 @@ import { ref, onMounted } from 'vue'
 import { useBaseStore } from "@/store/index"
 import { storeToRefs } from "pinia"
 
+const activeItem = ref('list')
 let $router = useRouter()
 const $store = useBaseStore()
 const { isRoot } = storeToRefs($store)
@@ -66,15 +67,17 @@ const handleRouterBack = () => {
 const handleRouterForward = () => {
   $router.go(1)
 }
-const refreshBtnState = () => {
-  console.log($router.currentRoute.value.fullPath)
-  if ($router.currentRoute.value.fullPath === "/") {
-    isRoot.value = true
-  } else {
-    isRoot.value = false
-  }
+const handleSelect = (v: string) => {
+  localStorage.setItem('menu-section', v)
+  $router.push({
+    name: v
+  })
 }
-refreshBtnState()
+onMounted(() => {
+  if (localStorage.getItem('menu-section')) {
+    activeItem.value = localStorage.getItem('menu-section') as string
+  }
+})
 </script>
 
 <style lang="scss" scoped>
