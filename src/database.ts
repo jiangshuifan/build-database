@@ -13,7 +13,8 @@ export interface dbParams {
   id?: number | string,
   name?: string,
   type?: type,
-  description?: string
+  description?: string,
+  account: string
 }
 //数据库表
 export interface tbParams {
@@ -56,11 +57,15 @@ export class Database {
     if (Object.hasOwn(params, 'description')) {
       this.description = params.description as string
     }
+    if (Object.hasOwn(params, 'account')) {
+      this.account = params.account as string
+    }
   }
   id: undefined | number = undefined
   name: string = ""
   type: type = 'mysql'
   description: string = ''
+  account = ""
 }
 export class DatabaseTable {
   constructor(params: tbParams) {

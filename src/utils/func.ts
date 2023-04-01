@@ -65,3 +65,26 @@ export const randowArray = (arr: any[]) => {
   }
   return arr
 }
+
+//时间区段
+export const getTimeSection = () => {
+  let currentTime = new Date()
+  let currentHour = currentTime.getHours()
+  let text = ""
+  if (currentHour >= 22 || currentHour < 5) {
+    text = "深夜"
+  } else if (currentHour >= 5 && currentHour < 8) {
+    text = "早晨"
+  } else if (currentHour >= 8 && currentHour < 12) {
+    text = "上午"
+  } else if (currentHour >= 12 && currentHour < 14) {
+    text = "中午"
+  } else if (currentHour >= 14 && currentHour < 17) {
+    text = "下午"
+  } else if (currentHour >= 17 && currentHour < 19) {
+    text = "傍晚"
+  } else if (currentHour >= 19 && currentHour < 22) {
+    text = "晚上"
+  }
+  return text
+}

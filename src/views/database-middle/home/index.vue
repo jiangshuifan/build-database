@@ -48,7 +48,11 @@
               </div>
             </div>
           </div>
+          <div v-if="database.length === 0" style="position: absolute;top:0;left:0;right:0;bottom: 0;display: grid;">
+            <img style="width: 400px;margin: auto;" src="@/assets/svg/blank.svg" alt="" srcset="">
+          </div>
         </div>
+
         <div class="content-aside" v-show="isOpen">
           <h1 style="margin:20px 0;padding: 0;">
             <span>
@@ -75,11 +79,16 @@ import { Database } from "@/database"
 import { formConfig } from "@/interface/form"
 import Form from "@/components/form.vue"
 import { randowArray } from "@/utils/func"
+//pinia
+import { useBaseStore } from "@/store/index"
+import { storeToRefs } from "pinia"
 //路由
 import { useRouter } from "vue-router"
 const editform = ref()
 const inputText = ref('')
 
+const $store = useBaseStore()
+const { account: currentAccount } = storeToRefs($store)
 let colors: readonly string[] = randowArray(['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452', '#9a60b4', '#ea7ccc'])
 const $router = useRouter()
 interface pageInterface {
@@ -129,7 +138,8 @@ const handleCreateNewTable = async function (data: any) {
     const db = new Database({
       name: data.name,
       type: data.type,
-      description: data.description
+      description: data.description,
+      account: currentAccount.value
     })
     let res = await createDatabase(db)
     if (res.success) {
@@ -199,7 +209,8 @@ const handleViewDB = function (id: number | string) {
 
 
 onBeforeMount(async () => {
-  pageData.database = (await getDatabaseList()).data
+  let user = JSON.parse(localStorage.getItem('user') as string)
+  pageData.database = (await getDatabaseList(user.account)).data
 })
 </script>
 <style lang="scss" scoped>
@@ -220,6 +231,7 @@ $padding: 10px;
       display: flex;
       flex-direction: column;
       overflow: auto;
+      height: 100%;
       position: relative;
 
       h1 {
@@ -269,6 +281,7 @@ $padding: 10px;
       }
 
       .db-list {
+        position: relative;
         flex: 1;
         overflow: auto;
         padding: 0 20px;

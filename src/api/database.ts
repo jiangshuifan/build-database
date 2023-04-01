@@ -1,8 +1,10 @@
 import request from "../utils/request"
 import { downloadBlobFile } from "../utils/download"
 import { Database, dbParams } from "../database"
-export const getDatabaseList = async function () {
-  return await request.post<Database[]>('/database/list')
+export const getDatabaseList = async function (account: string) {
+  return await request.post<Database[]>('/database/list', {
+    account
+  })
 }
 
 export const createDatabase = async function (db: dbParams) {

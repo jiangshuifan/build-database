@@ -1,0 +1,43 @@
+[
+  {
+    "api": "getVerificationCode",
+    "path": "getcode",
+    "allParams": [],
+    "requiredParams": [
+      "email"
+    ],
+    "desc": "获取验证码",
+    "validateToken": false
+  },
+  {
+    "api": "registerWithMail",
+    "path": "register",
+    "allParams": [],
+    "requiredParams": [
+      "email",
+      "password",
+      "code"
+    ],
+    "desc": "注册",
+    "validateToken": false
+  },
+  {
+    "api": "handleLogin",
+    "path": "login",
+    "allParams": [],
+    "requiredParams": [
+      "email",
+      "password"
+    ],
+    "desc": "登录",
+    "validateToken": false
+  },
+  {
+    "api": "handleLogout",
+    "path": "logout",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "退出登录",
+    "validateToken": false
+  }
+]

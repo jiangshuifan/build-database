@@ -19,6 +19,7 @@ export const useBaseStore = defineStore('db', {
   state: () => {
     return {
       isRoot: false,//是否为根节点
+      account: JSON.parse(localStorage.getItem('user') as string).account as string
     }
   },
   getters: {},

@@ -8,7 +8,8 @@ const { formatReturn } = require('../utils/format')
 class DatabaseHandler {
   getList = async (ctx) => {
     try {
-      let dbs = await getAllDatabase()
+      const { account } = ctx.request.body
+      let dbs = await getAllDatabase(account)
       ctx.body = formatReturn(true, dbs)
     } catch (err) {
       console.log(err)

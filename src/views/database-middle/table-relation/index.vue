@@ -15,9 +15,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, getCurrentInstance } from "vue"
 // import Demo from "./demo.vue"
-import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList } from "../../utils/format-data/graph-nodes"
-import { getTableFieldNodes } from "../../api/table"
-import { getTableFieldRelation } from "../../api/database"
+import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList } from "@/utils/format-data/graph-nodes"
+import { getTableFieldNodes } from "@/api/table"
+import { getTableFieldRelation } from "@/api/database"
 import { useRouter } from "vue-router"
 
 const $router = useRouter()

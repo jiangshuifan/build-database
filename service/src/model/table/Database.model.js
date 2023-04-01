@@ -29,6 +29,11 @@ const Database = seq.define(
       allowNull: true,
       comment: '描述',
     },
+    user_id: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      comment: '拥有者',
+    },
   },
   {
     //设置表名.不设置默认会生成模型名称的复数，也可以通过const sequelize = new Sequelize('sqlite::memory:', { define: {freezeTableName: true}})关闭自动生成复数

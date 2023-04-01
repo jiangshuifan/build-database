@@ -40,6 +40,9 @@
               </div>
             </div>
           </div>
+          <div v-if="tables.length === 0" style="position: absolute;top:0;left:0;right:0;bottom: 0;display: grid;">
+            <img style="width: 400px;margin: auto;" src="@/assets/svg/blank.svg" alt="" srcset="">
+          </div>
         </div>
         <div class="content-aside" v-show="pageData.isOpen">
           <h1 style="margin:20px 0;padding: 0;">
@@ -190,6 +193,7 @@ $padding: 10px;
 
 
     .content-main {
+      height: 100%;
       display: flex;
       flex-direction: column;
       overflow: auto;
@@ -243,6 +247,7 @@ $padding: 10px;
 
 
       .tb-list {
+        position: relative;
         flex: 1;
         overflow: auto;
         padding: 0 20px;

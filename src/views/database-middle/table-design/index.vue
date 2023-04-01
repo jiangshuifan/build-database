@@ -49,12 +49,12 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, computed, onBeforeMount } from "vue"
-import { getFieldList, createField, updateField, deleteField } from "../../api/field"
-import { dbField, tableFieldColumnList, TableField } from '../../database'
-import { getFieldFormConfig } from "../../interface/form"
-import Form from "../../components/form.vue"
+import { getFieldList, createField, updateField, deleteField } from "@/api/field"
+import { dbField, tableFieldColumnList, TableField } from '@/database'
+import { getFieldFormConfig } from "@/interface/form"
+import Form from "@/components/form.vue"
 import { ElNotification } from "element-plus"
-import { deepClone } from "../../utils/func"
+import { deepClone } from "@/utils/func"
 
 import { useRouter } from "vue-router"
 

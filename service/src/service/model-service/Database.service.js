@@ -9,18 +9,24 @@ const {
 
 class DatabaseService {
   //数据库列表
-  getAllDatabase = async () => {
-    let database = await Database.findAll()
+  getAllDatabase = async (account) => {
+    let database = await Database.findAll({
+      where: {
+        user_id: account
+      }
+    })
     database = await formatToNormalArray(database)
     return database
   }
   //创建数据库
-  createDatabase = async ({ name, type, description }) => {
+  createDatabase = async ({ name, type, description, account }) => {
     const newDb = {
       name: name,
       type: type,
       description: description,
+      user_id: account
     }
+    console.log(newDb)
     const res = await Database.create(newDb)
     return res.dataValues
   }
