@@ -16,7 +16,7 @@
           于未然
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>退出登录</el-dropdown-item>
+              <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -73,6 +73,10 @@ const handleSelect = (v: string) => {
   $router.push({
     name: v
   })
+}
+
+const handleLogout = ()=>{
+  
 }
 onMounted(() => {
   timeSection.value = getTimeSection()

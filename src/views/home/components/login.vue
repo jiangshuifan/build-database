@@ -73,8 +73,7 @@ const handleLogin = async function (form: FormInstance | undefined) {
       let token = res.data.token
       localStorage.setItem('app_token', token)
       localStorage.setItem('user', JSON.stringify({
-        account: formData.email,
-        password: formData.password
+        account: formData.email
       }))
       emits("login", formData.email)
     }

@@ -73,6 +73,7 @@
 </template>
 <script setup lang="ts">
 import { ref, reactive, toRefs, onBeforeMount } from "vue"
+import { getUser } from "@/global"
 import { getDatabaseList, createDatabase, updateDatabase, deleteDatabase, downloadDb, fuzzyQueryDbs, downloadDbZip } from "@/api/database"
 import { ElNotification, ElMessageBox } from "element-plus"
 import { Database } from "@/database"
@@ -209,7 +210,7 @@ const handleViewDB = function (id: number | string) {
 
 
 onBeforeMount(async () => {
-  let user = JSON.parse(localStorage.getItem('user') as string)
+  let user = getUser()
   pageData.database = (await getDatabaseList(user.account)).data
 })
 </script>

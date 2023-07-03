@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import { DatabaseTable, Database } from '../database'
-
+import { getUser } from "@/global"
 
 export const useMainStore = defineStore('main', {
   state: () => {
@@ -19,7 +19,7 @@ export const useBaseStore = defineStore('db', {
   state: () => {
     return {
       isRoot: false,//是否为根节点
-      account: JSON.parse(localStorage.getItem('user') as string).account as string
+      account: getUser().account
     }
   },
   getters: {},
