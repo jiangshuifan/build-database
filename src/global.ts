@@ -8,3 +8,8 @@ interface iUser{
 export const  getUser = ()=>{
   return JSON.parse(localStorage.getItem('user') as string) as iUser
 }
+
+export const clearLoginState=()=>{
+  localStorage.removeItem('app_token')
+  localStorage.removeItem('user')
+}

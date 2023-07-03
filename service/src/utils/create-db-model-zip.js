@@ -62,6 +62,7 @@ const MergeTemplate = `
 
 
 const createDatabaseModelZip = async (props) => {
+  console.log(props)
   //fileList:{fileName:'文件名',content:'内容字符串'}[]
   const fileList = []
   //index.js
@@ -179,6 +180,7 @@ const createZip = async (fileList, path, resolve, reject) => {
     archive.on('error', function (err) {
       throw err;
     });
+    console.log(output)
     archive.pipe(output);
     fileList.forEach(file => {
       let { fileName, content } = file

@@ -55,6 +55,14 @@ const createDatabaseFile = async (props) => {
   for (let tableName in models) {
     await models[tableName].sync({ force: true })
   }
+  if(models.length===0){
+  //加个默认表,不然没生成数据库
+   const defaultModel = defineModel(seq,{
+      name:'default',
+      children:[]
+    })
+    await  defaultModel.sync({ force: true })
+  }
   let file = await fs.readFileSync(DB_STORE_PATH)
   return file
 }

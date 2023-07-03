@@ -57,6 +57,8 @@ import { ref, onMounted } from 'vue'
 import { useBaseStore } from "@/store/index"
 import { storeToRefs } from "pinia"
 import { getTimeSection } from "@/utils/func"
+import {clearLoginState} from "@/global"
+
 const timeSection = ref('')
 const activeItem = ref('list')
 let $router = useRouter()
@@ -76,7 +78,8 @@ const handleSelect = (v: string) => {
 }
 
 const handleLogout = ()=>{
-  
+  clearLoginState()
+  $router.replace('/')
 }
 onMounted(() => {
   timeSection.value = getTimeSection()

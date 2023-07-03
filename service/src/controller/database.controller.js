@@ -70,6 +70,7 @@ class DatabaseHandler {
       let database = await getDbById(db.id)
       let relation = await getAllMarjorKeyAndForeignKeyByDBID(db.id)
       let tables = await getAllTablesAndField(db.id)
+      console.log(tables)
       let dbFile = await createDatabaseFile({
         tables,
         relation,

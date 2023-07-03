@@ -1,6 +1,6 @@
 <template>
   <div>
-    404 not function
+    404 not found
   </div>
 </template>
 

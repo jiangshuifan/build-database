@@ -26,8 +26,8 @@
         <el-form-item prop="password">
           <div class="form-input">
             <label for="password">Password</label>
-            <el-input v-model="formData.password" id="password" autocomplete="off" minlength="6" maxlength="20"
-              :show-password="true" type="password" placeholder="请输入密码"></el-input>
+            <el-input v-model="formData.password" id="password" @keyup.enter="handleLogin(ruleLoginForm)" autocomplete="off" minlength="6" maxlength="20"
+              :show-password="true" type="password" placeholder="请输入密码" ></el-input>
           </div>
         </el-form-item>
       </el-form>
