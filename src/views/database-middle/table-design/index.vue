@@ -40,7 +40,7 @@
               </el-icon></el-button>
           </el-tooltip>
         </h1>
-        <Form ref="editForm" :type="pageData.formType" :init-data="formInitData" :data="pageData.formData"
+        <Form ref="editForm" :type="pageData.formType" :init-data="formInitData" @close="()=>{pageData.isOpen=false}" :data="pageData.formData"
           @save="handleSave" :config="initFieldsConfig">
         </Form>
       </div>

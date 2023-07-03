@@ -54,7 +54,7 @@
               </el-icon></el-button>
           </h1>
           <div style="flex:1;overflow: auto;">
-            <Form ref="editform" :type="pageData.formType" :data="pageData.formData" @save="handleSave"
+            <Form ref="editform" :type="pageData.formType" :data="pageData.formData" @close="()=>{pageData.isOpen=false}" @save="handleSave"
               :config="initTableConfig"></Form>
           </div>
         </div>

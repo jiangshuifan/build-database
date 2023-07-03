@@ -38,8 +38,8 @@ export const downloadDb = async function (dbId: number, dbName: string) {
   downloadBlobFile(blob, dbName + new Date().getTime() + '.db')
 }
 
-export const fuzzyQueryDbs = async function (keyword: string) {
-  return await request.post<Database[]>('/database/fuzzy-query', { keyword })
+export const fuzzyQueryDbs = async function (keyword: string,account:string) {
+  return await request.post<Database[]>('/database/fuzzy-query', { keyword,account})
 }
 
 export const downloadDbZip = async function (dbId: number, dbName: string) {

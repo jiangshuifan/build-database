@@ -10,6 +10,28 @@
     "@jridgewell/gen-mapping" "^0.1.0"
     "@jridgewell/trace-mapping" "^0.3.9"
 
+"@antv/x6-common@^2.0.13":
+  version "2.0.13"
+  resolved "https://registry.yarnpkg.com/@antv/x6-common/-/x6-common-2.0.13.tgz#12d9bcf52c42479f396a0ebb15e2d1ce9b62f2d2"
+  integrity sha512-CXSV43WvgRvNPAemhzK0l5Sr4hzHN0xobl5HFo6EwKmqBI+MIpc9hiUPJgrtfxsfd/cTM5mOpADR1U4PJYup9g==
+  dependencies:
+    lodash-es "^4.17.15"
+    utility-types "^3.10.0"
+
+"@antv/x6-geometry@^2.0.5":
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/@antv/x6-geometry/-/x6-geometry-2.0.5.tgz#c158317d74135bedd78c2fdeb76f9c7cfa0ef0aa"
+  integrity sha512-MId6riEQkxphBpVeTcL4ZNXL4lScyvDEPLyIafvWMcWNTGK0jgkK7N20XSzqt8ltJb0mGUso5s56mrk8ysHu2A==
+
+"@antv/x6@^2.11.2":
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/@antv/x6/-/x6-2.11.2.tgz#822a02c8705bd10dfab164e8a4180ce76d06617c"
+  integrity sha512-tlb1/1eGqVIGgK5qMRpiOlw4nFDO79YysuwV8v3/gHV0KuSI9awbAKV1LqTteJtVN6bLCz4UXn1o7VO1XuC2EQ==
+  dependencies:
+    "@antv/x6-common" "^2.0.13"
+    "@antv/x6-geometry" "^2.0.5"
+    utility-types "^3.10.0"
+
 "@babel/code-frame@^7.18.6":
   version "7.18.6"
   resolved "https://registry.npmmirror.com/@babel/code-frame/-/code-frame-7.18.6.tgz#3b25d38c89600baa2dcc219edfa88a74eb2c427a"
@@ -1797,7 +1819,7 @@ loader-utils@^1.0.1:
     emojis-list "^3.0.0"
     json5 "^1.0.1"
 
-lodash-es@^4.17.21:
+lodash-es@^4.17.15, lodash-es@^4.17.21:
   version "4.17.21"
   resolved "https://registry.npmmirror.com/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
   integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
@@ -2143,6 +2165,11 @@ update-browserslist-db@^1.0.10:
   dependencies:
     escalade "^3.1.1"
     picocolors "^1.0.0"
+
+utility-types@^3.10.0:
+  version "3.10.0"
+  resolved "https://registry.yarnpkg.com/utility-types/-/utility-types-3.10.0.tgz#ea4148f9a741015f05ed74fd615e1d20e6bed82b"
+  integrity sha512-O11mqxmi7wMKCo6HKFt5AhO4BwY3VV68YU07tgxfz8zJTIxr4BpsezN49Ffwy9j3ZpwwJp4fkRwjRzq3uWE6Rg==
 
 vite-plugin-compression@^0.5.1:
   version "0.5.1"

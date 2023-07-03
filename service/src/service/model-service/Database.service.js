@@ -92,12 +92,13 @@ class DatabaseService {
       return db.dataValues
     }
   }
-  getDatabaseByName = async (name) => {
+  getDatabaseByName = async (name,account) => {
     let res = await Database.findAll({
       where: {
         name: {
           [Op.substring]: name
-        }
+        },
+        user_id:account
       },
     })
     res = await formatToNormalArray(res)

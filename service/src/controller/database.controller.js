@@ -107,8 +107,8 @@ class DatabaseHandler {
   }
   fuzzyQueryDb = async (ctx) => {
     try {
-      let { keyword } = ctx.request.body
-      let dbs = await getDatabaseByName(keyword)
+      let { keyword,account } = ctx.request.body
+      let dbs = await getDatabaseByName(keyword,account)
       ctx.body = formatReturn(true, dbs)
     } catch (err) {
       console.log(err)

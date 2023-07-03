@@ -8,7 +8,7 @@
           <span>数据库管理</span>
         </h1>
         <div class="db-query">
-          <el-input v-model="inputText" placeholder="查找数据库名称"> <template #append>
+          <el-input @keyup.enter="handleFuzzyQuery" v-model="inputText" placeholder="查找数据库名称"> <template #append>
               <el-button @click="handleFuzzyQuery"><el-icon>
                   <Search />
                 </el-icon></el-button>
@@ -166,7 +166,7 @@ const handleCreateNewTable = async function (data: any) {
 
 //模糊查询
 const handleFuzzyQuery = async function () {
-  pageData.database = (await fuzzyQueryDbs(inputText.value)).data
+  pageData.database = (await fuzzyQueryDbs(inputText.value,getUser().account)).data
 }
 
 //移除数据库

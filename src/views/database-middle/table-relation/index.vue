@@ -2,23 +2,44 @@
 
 <template>
   <div class="relation-container">
-    <div class="area-1"></div>
-    <div class="area-2"></div>
-    <div class="area-3">
-      <div class="echart" ref="echart" style="height:100%;width:100%"></div>
+    <div style="height:80px;display: flex;align-items: center;justify-content: center;">
+      <el-radio-group v-model="graphRadio.graphType">
+        <el-radio-button @click="handleChangeGraph" v-for="graphItem in graphRadio.graphArray" :key="graphItem.id" :label="graphItem.value">{{ graphItem.label }}</el-radio-button>
+      </el-radio-group>
     </div>
-    <div class="area-4"></div>
-    <div class="area-5"></div>
-
+    <div class="graph-area">
+      <div v-if="graphRadio.graphType===GraphEnum.relation" ref="echart" style="height:100%;width:100%"></div>
+      <div v-if="graphRadio.graphType===GraphEnum.er" ref="x6Graph" style="height:100%;width:100%"></div>
+    </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref, computed, onMounted, getCurrentInstance } from "vue"
+import { ref,reactive ,computed, onMounted, getCurrentInstance } from "vue"
 // import Demo from "./demo.vue"
 import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList } from "@/utils/format-data/graph-nodes"
 import { getTableFieldNodes } from "@/api/table"
 import { getTableFieldRelation } from "@/api/database"
 import { useRouter } from "vue-router"
+
+enum GraphEnum {
+  'relation' = 1,
+  'er' = 2
+}
+interface iGraphItem{
+  id:number,
+  label:string,
+  value:GraphEnum
+}
+const graphRadio = reactive<{
+  graphType:GraphEnum,
+  graphArray:iGraphItem[]
+}>({
+  graphType:GraphEnum.relation,
+  graphArray:[
+    {id:1,label:'关系图',value:GraphEnum.relation},
+    {id:2,label:'ER图',value:GraphEnum.er},
+  ]
+})
 
 const $router = useRouter()
 const databaseId: number | string = parseInt($router.currentRoute.value.params.database as string)
@@ -28,11 +49,13 @@ let initData: iGraph = {
   categories: []
 }
 
-
+const x6Graph = ref()
 let echart: null | HTMLElement = ref(null).value
 let chart: any
 let $echarts = getCurrentInstance()?.appContext.config.globalProperties.$echarts
-onMounted(async () => {
+
+
+const loadRelationGraph=async ()=>{
   chart = $echarts.init(echart);
   let graphNodes = getGraphNodes((await getTableFieldNodes(databaseId)).data)
   let tableFieldRelation = (await getTableFieldRelation(databaseId)).data
@@ -168,6 +191,17 @@ onMounted(async () => {
     updatePosition()
   }
 
+}
+
+const handleChangeGraph = async ()=>{
+  
+}
+
+const loadErGraph = async ()=>{
+
+}
+onMounted(async () => {
+  loadRelationGraph()
 })
 
 </script>
@@ -175,31 +209,18 @@ onMounted(async () => {
 .relation-container {
   height: 100%;
   width: 100%;
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  grid-template-rows: 1fr auto 1fr
+  display: flex;
+  flex-direction: column;
 }
 
-.area-1 {
-  grid-area: 1/1/3/2;
-}
 
-.area-2 {
-  grid-area: 1/2/2/4;
-}
-
-.area-3 {
+.graph-area{
+  flex:1;
   width: 800px;
   height: 540px;
   padding: 20px;
+  margin: 0 auto;
   background-color: #fff;
 }
 
-.area-4 {
-  grid-area: 3/1/4/3;
-}
-
-.area-5 {
-  grid-area: 2/3/4/4;
-}
 </style>
