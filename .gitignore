@@ -23,5 +23,5 @@ dist-ssr
 *.sln
 *.sw?
 
-service/database/data
-service/database/zip
+service/database/data/
+service/database/zip/

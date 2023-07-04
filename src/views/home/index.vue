@@ -3,8 +3,9 @@
     <div class="home-body">
       <div class="background">
         <div class="logon-form">
-          <LoginForm @login="handleLogin" @register="handleToRegister" v-show="isLogin"></LoginForm>
-          <RegisterForm v-show="!isLogin" @login="handleToLogin"></RegisterForm>
+          <LoginForm @login="handleLogin" @register="handleToRegister" @reset-password="handleToResetPassword" v-show="currentState===StateEnum.login"></LoginForm>
+          <RegisterForm v-show="currentState===StateEnum.register" @login="handleToLogin"></RegisterForm>
+          <ResetPassword v-show="currentState===StateEnum.resetPassword" @login="handleToLogin"></ResetPassword>
         </div>
       </div>
     </div>
@@ -19,21 +20,32 @@ import { ref, reactive, toRefs } from "vue"
 import { ElNotification } from "element-plus"
 import RegisterForm from "./components/register.vue"
 import LoginForm from "./components/login.vue"
+import ResetPassword from "./components/reset-password.vue"
 import { HandleLogin } from "@/api/user"
 import { useRouter } from "vue-router"
-const isLogin = ref(true)
+
+enum StateEnum {
+  login = 1,
+  register = 2,
+  resetPassword = 3
+}
+
+const currentState = ref<StateEnum>(StateEnum.login)
 const $router = useRouter()
 const handleLogin = async function () {
   $router.push({
     name: "list"
   })
 }
-const handleToLogin = function () {
-  isLogin.value = true
-}
 
+const handleToLogin = function () {
+  currentState.value = StateEnum.login
+}
+const handleToResetPassword = function (){
+  currentState.value = StateEnum.resetPassword
+}
 const handleToRegister = function () {
-  isLogin.value = false
+  currentState.value = StateEnum.register
 }
 </script>
 

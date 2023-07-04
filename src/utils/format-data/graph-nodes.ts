@@ -1,6 +1,8 @@
 export interface tableRoot {
   name: string
   children: any[]
+  dbId:number,
+  id:number
 }
 
 export interface iGraph {

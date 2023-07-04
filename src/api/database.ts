@@ -19,7 +19,7 @@ export const deleteDatabase = async function (id: string | number) {
 }
 
 
-interface iTableFieldRelation {
+export interface iTableFieldRelation {
   foreignKeyField: number,
   foreignKeyTable: number,
   marjorKeyTable: number,

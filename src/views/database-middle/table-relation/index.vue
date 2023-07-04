@@ -3,41 +3,45 @@
 <template>
   <div class="relation-container">
     <div style="height:80px;display: flex;align-items: center;justify-content: center;">
-      <el-radio-group v-model="graphRadio.graphType">
-        <el-radio-button @click="handleChangeGraph" v-for="graphItem in graphRadio.graphArray" :key="graphItem.id" :label="graphItem.value">{{ graphItem.label }}</el-radio-button>
+      <el-radio-group @change="handleChangeGraph" v-model="graphRadio.graphType">
+        <el-radio-button v-for="graphItem in graphRadio.graphArray" :key="graphItem.id" :label="graphItem.value">{{
+          graphItem.label }}</el-radio-button>
       </el-radio-group>
     </div>
-    <div class="graph-area">
-      <div v-if="graphRadio.graphType===GraphEnum.relation" ref="echart" style="height:100%;width:100%"></div>
-      <div v-if="graphRadio.graphType===GraphEnum.er" ref="x6Graph" style="height:100%;width:100%"></div>
+    <div class="graph-area" ref="graph_container">
+      <div v-if="graphRadio.graphType === GraphEnum.relation" class="graph-relation" style="height:100%;width:100%"></div>
+      <div v-if="graphRadio.graphType === GraphEnum.er" class="graph-er" style="height:100%;width:100%"></div>
     </div>
   </div>
 </template>
 <script setup lang="ts">
-import { ref,reactive ,computed, onMounted, getCurrentInstance } from "vue"
+import { ref, reactive, computed, onMounted, getCurrentInstance, nextTick } from "vue"
 // import Demo from "./demo.vue"
-import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList } from "@/utils/format-data/graph-nodes"
+import { outPutOption, getGraphNodes, iGraph, getVisibleNodes, getFieldList, tableRoot } from "@/utils/format-data/graph-nodes"
+import { Graph, Cell, Shape } from '@antv/x6'
 import { getTableFieldNodes } from "@/api/table"
-import { getTableFieldRelation } from "@/api/database"
+import { getTableFieldRelation, iTableFieldRelation } from "@/api/database"
 import { useRouter } from "vue-router"
 
 enum GraphEnum {
   'relation' = 1,
   'er' = 2
 }
-interface iGraphItem{
-  id:number,
-  label:string,
-  value:GraphEnum
+interface iGraphItem {
+  id: number,
+  label: string,
+  value: GraphEnum
 }
+
+const graph_container = ref()
 const graphRadio = reactive<{
-  graphType:GraphEnum,
-  graphArray:iGraphItem[]
+  graphType: GraphEnum,
+  graphArray: iGraphItem[]
 }>({
-  graphType:GraphEnum.relation,
-  graphArray:[
-    {id:1,label:'关系图',value:GraphEnum.relation},
-    {id:2,label:'ER图',value:GraphEnum.er},
+  graphType: GraphEnum.relation,
+  graphArray: [
+    { id: 1, label: '关系图', value: GraphEnum.relation },
+    { id: 2, label: 'ER图', value: GraphEnum.er },
   ]
 })
 
@@ -49,14 +53,12 @@ let initData: iGraph = {
   categories: []
 }
 
-const x6Graph = ref()
-let echart: null | HTMLElement = ref(null).value
-let chart: any
 let $echarts = getCurrentInstance()?.appContext.config.globalProperties.$echarts
 
-
-const loadRelationGraph=async ()=>{
-  chart = $echarts.init(echart);
+const loadRelationGraph = async () => {
+  let container = graph_container.value as HTMLElement
+  let echart = container.querySelector('.graph-relation')
+  let chart = $echarts.init(echart);
   let graphNodes = getGraphNodes((await getTableFieldNodes(databaseId)).data)
   let tableFieldRelation = (await getTableFieldRelation(databaseId)).data
 
@@ -193,12 +195,194 @@ const loadRelationGraph=async ()=>{
 
 }
 
-const handleChangeGraph = async ()=>{
-  
+const handleChangeGraph = async (graphType: GraphEnum) => {
+  await nextTick()
+  if (graphType === GraphEnum.er) {
+    loadErGraph()
+  } else if (graphType === GraphEnum.relation) {
+    loadRelationGraph()
+  }
 }
+const loadErGraph = async () => {
+  let graphNodes = (await getTableFieldNodes(databaseId)).data
+  let tableFieldRelation = (await getTableFieldRelation(databaseId)).data
+  console.log(graphNodes)
+  console.log(tableFieldRelation)
+  let container = graph_container.value as HTMLElement
+  let x6Graph = container.querySelector('.graph-er') as HTMLElement
+  const LINE_HEIGHT = 24
+  const NODE_WIDTH = 150
+  Graph.registerPortLayout(
+    'erPortPosition',
+    (portsPositionArgs) => {
+      return portsPositionArgs.map((_, index) => {
+        return {
+          position: {
+            x: 0,
+            y: (index + 1) * LINE_HEIGHT,
+          },
+          angle: 0,
+        }
+      })
+    },
+    true,
+  )
+  Graph.registerNode(
+    'er-rect',
+    {
+      inherit: 'rect',
+      markup: [
+        {
+          tagName: 'rect',
+          selector: 'body',
+        },
+        {
+          tagName: 'text',
+          selector: 'label',
+        },
+      ],
+      attrs: {
+        rect: {
+          strokeWidth: 1,
+          stroke: '#5F95FF',
+          fill: '#5F95FF',
+        },
+        label: {
+          fontWeight: 'bold',
+          fill: '#ffffff',
+          fontSize: 12,
+        },
+      },
+      ports: {
+        groups: {
+          list: {
+            markup: [
+              {
+                tagName: 'rect',
+                selector: 'portBody',
+              },
+              {
+                tagName: 'text',
+                selector: 'portNameLabel',
+              },
+              {
+                tagName: 'text',
+                selector: 'portTypeLabel',
+              },
+            ],
+            attrs: {
+              portBody: {
+                width: NODE_WIDTH,
+                height: LINE_HEIGHT,
+                strokeWidth: 1,
+                stroke: '#5F95FF',
+                fill: '#EFF4FF',
+                magnet: true,
+              },
+              portNameLabel: {
+                ref: 'portBody',
+                refX: 6,
+                refY: 6,
+                fontSize: 10,
+              },
+              portTypeLabel: {
+                ref: 'portBody',
+                refX: 95,
+                refY: 6,
+                fontSize: 10,
+              },
+            },
+            position: 'erPortPosition',
+          },
+        },
+      },
+    },
+    true,
+  )
 
-const loadErGraph = async ()=>{
-
+  const graph = new Graph({
+    container: x6Graph,
+    connecting: {
+      router: {
+        name: 'er',
+        args: {
+          offset: 25,
+          direction: 'H',
+        },
+      },
+      createEdge() {
+        return new Shape.Edge({
+          attrs: {
+            line: {
+              stroke: '#A2B1C3',
+              strokeWidth: 2,
+            },
+          },
+        })
+      },
+    },
+  })
+  const cells: Cell[] = []
+  // data.forEach((item: any) => {
+  //   if (item.shape === 'edge') {
+  //     cells.push(graph.createEdge(item))
+  //   } else {
+  //     cells.push(graph.createNode(item))
+  //   }
+  // })
+  graphNodes.forEach((graphNode: tableRoot,index) => {
+    const point = graphNode.children.map(v => {
+      return {
+        "id": v.id,
+        "group": "list",
+        "attrs": {
+          "portNameLabel": {
+            "text": v.field
+          },
+          "portTypeLabel": {
+            "text": v.type
+          }
+        }
+      }
+    })
+    const tabelNode = {
+      "id": graphNode.id+"",
+      "shape": "er-rect",
+      "label":graphNode.name,
+      "width": 150,
+      "height": 24,
+      "position": {
+        "x": 250*(index+1),
+        "y": 210
+      },
+      "ports": point
+    }
+    cells.push(graph.createNode(tabelNode))
+  })
+  tableFieldRelation.forEach((graphEdge: iTableFieldRelation) => {
+    console.log(graphEdge)
+    const edgeNode =   {
+    "shape": "edge",
+    "source": {
+      "cell": graphEdge.marjorKeyTable+'',
+      "port": graphEdge.marjorKeyField+''
+    },
+    "target": {
+      "cell": graphEdge.foreignKeyTable+'',
+      "port": graphEdge.foreignKeyField+''
+    },
+    "attrs": {
+      "line": {
+        "stroke": "#A2B1C3",
+        "strokeWidth": 2
+      }
+    },
+    "zIndex": 0
+  }
+    cells.push(graph.createEdge(edgeNode))
+  })
+  graph.resetCells(cells)
+  graph.zoomToFit({ padding: 10, maxScale: 1 })
 }
 onMounted(async () => {
   loadRelationGraph()
@@ -214,13 +398,12 @@ onMounted(async () => {
 }
 
 
-.graph-area{
-  flex:1;
+.graph-area {
+  flex: 1;
   width: 800px;
   height: 540px;
   padding: 20px;
   margin: 0 auto;
   background-color: #fff;
 }
-
 </style>

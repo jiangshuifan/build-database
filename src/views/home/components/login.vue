@@ -33,10 +33,10 @@
       </el-form>
       <div style="margin-top: 20px;display: flex;align-items: center;color:#666">
         <div style="display: flex;align-items: center;">
-          <el-checkbox v-model="formData.isRemember" style="margin-right:10px" id="rpassword"></el-checkbox>
-          <label for="rpassword">记住密码</label>
+          <!-- <el-checkbox v-model="formData.isRemember" style="margin-right:10px" id="rpassword"></el-checkbox>
+          <label for="rpassword">记住密码</label> -->
         </div>
-        <span style="margin-left:auto">忘记密码</span>
+        <span style="margin-left:auto;cursor: pointer;" @click="handleResetPassword">忘记密码</span>
       </div>
       <div class="opperate-btns" style="display: flex;">
         <el-button class="btn-login" @click="() => handleLogin(ruleLoginForm)">登录</el-button>
@@ -52,7 +52,7 @@ import { ElNotification } from "element-plus"
 import type { FormInstance, FormRules } from "element-plus"
 import { HandleLogin } from "@/api/user"
 const ruleLoginForm = ref<FormInstance>()
-const emits = defineEmits(['login', 'register'])
+const emits = defineEmits(['login', 'register','reset-password'])
 const formData = reactive({
   isRemember: false,
   email: '',
@@ -82,6 +82,9 @@ const handleLogin = async function (form: FormInstance | undefined) {
 
 const handleRegister = function () {
   emits("register")
+}
+const handleResetPassword = function (){
+  emits("reset-password")
 }
 
 const checkEmail = (rule: any, value: any, callback: any) => {
