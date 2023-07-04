@@ -1,29 +1,29 @@
 
-const getVerificationCode = require('../utils/verification-code')
+const createVerificationCode = require('../utils/verification-code')
 const { formatReturn } = require('../utils/format')
-const { sendVerificationCodeWithMail } = require('../utils/send-mail')
+const { sendVerificationCodeWithMail ,sendResetPasswordVCodeWithMail} = require('../utils/send-mail')
 const { getClientIP } = require('../utils/ip')
 const { qqMailConfig } = require('../../private/private-global')
 const { vcode, user } = require("../service/index")
 const { addVcode, updateCodeRecord, getEmailIsExisted, deleteCodeRecord } = vcode
-const { getUserNameIsExisted: isUserExist, addNewUser } = user
+const { getUserNameIsExisted: isUserExist, addNewUser,updatePassword } = user
 
 const { createToken, validateToken } = require('../utils/token')
 
 const { IpChange, GetVCodeTooManyTimesError, AccountExistError, ExecuteError, AccountRegisteredError,
-  VcodeExpiredError, VcodeValidError, VcodeError
+  VcodeExpiredError, VcodeValidError, VcodeError,AccountDidNotRegisterError
 } = require('../errors/user.err')
 const { VALID_DURATION } = require('../../config');
 class UserHandler {
   //验证码
   getVerificationCode = async (ctx) => {
     try {
-      let { email } = ctx.request.body
-      let code = getVerificationCode()
+      let { email,type } = ctx.request.body
+      let code = createVerificationCode()
       let ip = getClientIP(ctx)
       //已注册列表中，是否已经存在
       let isRegistered = await isUserExist(email)
-      if (isRegistered) {
+      if (isRegistered && type==='1') {//已注册而在走注册流程
         ctx.app.emit('error', AccountExistError, ctx)
       } else {
         //正在注册列表中email是否存在
@@ -39,11 +39,19 @@ class UserHandler {
             if (gap <= 0) {
               //过期则直接更新
               await updateCodeRecord({ email, code }, VALID_DURATION)
-              await sendVerificationCodeWithMail({
-                account: email,
-                verificationCode: code,
-                projectName: '于未然的数据库设计项目'
-              }, qqMailConfig)
+              if(type==='1'){
+                await sendVerificationCodeWithMail({
+                  account: email,
+                  verificationCode: code,
+                  projectName: '于未然的数据库设计项目'
+                }, qqMailConfig)
+              }else if(type==='2'){
+                await sendResetPasswordVCodeWithMail({
+                  account: email,
+                  verificationCode: code,
+                  projectName: '于未然的数据库设计项目'
+                }, qqMailConfig)
+              }
               ctx.body = formatReturn(true, '验证码已发送，注意查收')
             } else {
               //未过期 判断ip
@@ -130,8 +138,32 @@ class UserHandler {
     }
   }
   //重置密码
-  resetPassword() {
-
+  resetPassword=async(ctx)=> {
+    const { email, password, code } = ctx.request.body
+    let isRegistered = await isUserExist(email)
+    if (isRegistered) {
+      let isExist = await getEmailIsExisted(email)
+      if (isExist) {//发送过验证码
+        let timeStamp = isExist.timeStamp
+        let currentTimeStamp = new Date().getTime()
+        let gap = parseInt(timeStamp) - currentTimeStamp
+        if (gap < 0) {//过期
+          ctx.app.emit('error', VcodeExpiredError, ctx)
+        } else {//未过期
+          if (isExist.code === code) {//重置密码
+            await updatePassword(email, password)
+            await deleteCodeRecord(email)
+            ctx.body = formatReturn(true, "密码重置成功！")
+          } else {//验证码错误
+            ctx.app.emit('error', VcodeError, ctx)
+          }
+        }
+      } else {//未发送过验证码
+        ctx.app.emit('error', VcodeValidError, ctx)
+      }
+    } else {
+      ctx.app.emit('error', AccountDidNotRegisterError, ctx)
+    }
   }
   //修改头像
   changeHeaderIcon() {

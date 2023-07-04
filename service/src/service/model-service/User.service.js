@@ -53,8 +53,14 @@ class UserService {
 
   //#region 更新
   //修改密码，这个权限给用户还是管理员？还是都给,e，要验证密码吗，密码要加密吗
-  updatePassword = async (userId) => {
-    console.log('改密码的，这个方法还未编写呀')
+  updatePassword = async (account,password) => {
+    await User.update({
+      password
+    }, {
+      where: {
+        account,
+      },
+    })
   }
   //#endregion
 }

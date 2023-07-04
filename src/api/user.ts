@@ -11,3 +11,6 @@ export const HandleRegister = async (params: any) => {
 export const HandleLogin = async (params: { email: string, password: string }) => {
   return request.post<{ token: string }>('/user/login', params)
 }
+export const HandleResetPassword = async (params: { email: string, password: string,code:string }) => {
+  return request.post('/user/resetpassword', params)
+}

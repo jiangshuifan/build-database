@@ -8,5 +8,7 @@ class UserError {
   VcodeExpiredError = "验证码过期，请重新获取"
   VcodeError = "验证码错误，请重新输入"
   VcodeValidError = "验证码无效，请先获取验证码"
+
+  AccountDidNotRegisterError = "该邮箱未注册，请先注册账号"
 }
 module.exports = new UserError()

@@ -3,9 +3,9 @@
     <div class="home-body">
       <div class="background">
         <div class="logon-form">
-          <LoginForm @login="handleLogin" @register="handleToRegister" @reset-password="handleToResetPassword" v-show="currentState===StateEnum.login"></LoginForm>
+          <LoginForm   @login="handleLogin" @register="handleToRegister" @reset-password="handleToResetPassword" v-show="currentState===StateEnum.login"></LoginForm>
           <RegisterForm v-show="currentState===StateEnum.register" @login="handleToLogin"></RegisterForm>
-          <ResetPassword v-show="currentState===StateEnum.resetPassword" @login="handleToLogin"></ResetPassword>
+          <ResetPasswordForm v-show="currentState===StateEnum.resetPassword" @login="handleToLogin"></ResetPasswordForm>
         </div>
       </div>
     </div>
@@ -20,8 +20,7 @@ import { ref, reactive, toRefs } from "vue"
 import { ElNotification } from "element-plus"
 import RegisterForm from "./components/register.vue"
 import LoginForm from "./components/login.vue"
-import ResetPassword from "./components/reset-password.vue"
-import { HandleLogin } from "@/api/user"
+import ResetPasswordForm from "./components/reset-password.vue"
 import { useRouter } from "vue-router"
 
 enum StateEnum {

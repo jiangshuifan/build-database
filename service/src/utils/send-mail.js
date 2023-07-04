@@ -60,6 +60,26 @@ const sendVerificationCodeWithMail = async (recipient, mailConfig) => {
   sendMailer(mailConfig, mail)
 }
 
+
+const sendResetPasswordVCodeWithMail = async (recipient, mailConfig) => {
+  //user用户账号信息
+  let { account,//收件人
+    verificationCode,//验证码
+    projectName,//项目名
+  } = recipient;
+  let mail = {
+    from: mailConfig.auth.user,	// 发件人
+    subject: "注册邮件",// 主题
+    to: account,// 收件人
+    // 邮件内容，HTML格式,也可以时普通文本
+    // text: "验证码", //可以是链接，也可以是验证码
+    html: `<div>用户，您好！</div>
+    <p>您正在${projectName}进行密码重置，验证码五分钟有效，请尽快完成操作</p>
+    <p>验证码为：<span style="text-decoration:underline">${verificationCode}</span></p>
+    <p>备注：若非本人操作请忽略该邮件</p>`
+  };
+  sendMailer(mailConfig, mail)
+}
 module.exports = {
-  sendMailer, sendVerificationCodeWithMail
+  sendMailer, sendVerificationCodeWithMail,sendResetPasswordVCodeWithMail
 }

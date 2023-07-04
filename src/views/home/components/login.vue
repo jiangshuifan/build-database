@@ -20,13 +20,13 @@
         <el-form-item prop="email">
           <div class="form-input">
             <label for="email">Email</label>
-            <el-input v-model="formData.email" id="email" placeholder="请输入邮箱"></el-input>
+            <el-input :spellcheck="false"  v-model="formData.email" id="email" placeholder="请输入邮箱"></el-input>
           </div>
         </el-form-item>
         <el-form-item prop="password">
           <div class="form-input">
             <label for="password">Password</label>
-            <el-input v-model="formData.password" id="password" @keyup.enter="handleLogin(ruleLoginForm)" autocomplete="off" minlength="6" maxlength="20"
+            <el-input  :spellcheck="false" v-model="formData.password" id="password" @keyup.enter="handleLogin(ruleLoginForm)" autocomplete="off" minlength="6" maxlength="20"
               :show-password="true" type="password" placeholder="请输入密码" ></el-input>
           </div>
         </el-form-item>

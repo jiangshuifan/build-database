@@ -5,20 +5,20 @@
         <el-form-item prop="email">
           <div class="form-input">
             <label for="reset-password-email">Email</label>
-            <el-input id="reset-password-email" v-model.trim="formData.email"></el-input>
+            <el-input :spellcheck="false"  id="reset-password-email" v-model.trim="formData.email"></el-input>
           </div>
         </el-form-item>
         <el-form-item prop="password">
           <div class="form-input">
             <label for="reset-password-password">Password</label>
-            <el-input id="reset-password-password" minlength=6 maxlength=20 show-password type="password"
+            <el-input :spellcheck="false"  id="reset-password-password" minlength=6 maxlength=20 show-password type="password"
               v-model.trim="formData.password" autocomplete="off"></el-input>
           </div>
         </el-form-item>
         <el-form-item prop="checkPass">
           <div class="form-input">
             <label for="reset-password-repeat-password">Repeat Password</label>
-            <el-input id="reset-password-repeat-password" show-password type="password" minlength=6 maxlength=20
+            <el-input :spellcheck="false"  id="reset-password-repeat-password" show-password type="password" minlength=6 maxlength=20
               v-model.trim="formData.checkPass" autocomplete="off"></el-input>
           </div>
 
@@ -27,7 +27,7 @@
           <div>
             <div class="form-input">
               <label for="reset-password-verification-code">Verification Code</label>
-              <el-input id="reset-password-verification-code" v-model="formData.verificationCode" autocomplete="off"></el-input>
+              <el-input :spellcheck="false"  id="reset-password-verification-code" v-model="formData.verificationCode" autocomplete="off"></el-input>
             </div>
           </div>
         </el-form-item>
@@ -51,7 +51,7 @@
 import { ref, reactive } from "vue"
 import { ElNotification } from "element-plus"
 import type { FormInstance, FormRules } from "element-plus"
-import { HandleSendVerificationCode, HandleRegister } from "@/api/user"
+import { HandleSendVerificationCode, HandleResetPassword } from "@/api/user"
 const ruleResetPasswordForm = ref<FormInstance>()
 const emits = defineEmits(['login'])
 
@@ -64,7 +64,7 @@ const formData = reactive({
 const submitRegisterForm = async (form: FormInstance | undefined) => {
   let isValid = await form?.validate();
   if (isValid) {
-    const { data, success } = await HandleRegister({
+    const { data, success } = await HandleResetPassword({
       email: formData.email,
       password: formData.password,
       code: formData.verificationCode
@@ -85,7 +85,8 @@ const sendVerificationCode = async (form: FormInstance | undefined) => {
   if (isValid) {
     let res = (await HandleSendVerificationCode({
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      type:'2'//重置密码
     }))
     if (res.success) {
       ElNotification({

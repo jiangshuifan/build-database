@@ -5,13 +5,13 @@
         <el-form-item prop="email">
           <div class="form-input">
             <label for="register-email">Email</label>
-            <el-input id="register-email" v-model.trim="formData.email"></el-input>
+            <el-input :spellcheck="false"  id="register-email" v-model.trim="formData.email"></el-input>
           </div>
         </el-form-item>
         <el-form-item prop="password">
           <div class="form-input">
             <label for="register-password">Password</label>
-            <el-input id="register-password" minlength=6 maxlength=20 show-password type="password"
+            <el-input :spellcheck="false"  id="register-password" minlength=6 maxlength=20 show-password type="password"
               v-model.trim="formData.password" autocomplete="off"></el-input>
           </div>
 
@@ -19,7 +19,7 @@
         <el-form-item prop="checkPass">
           <div class="form-input">
             <label for="register-repeat-password">Repeat Password</label>
-            <el-input id="register-repeat-password" show-password type="password" minlength=6 maxlength=20
+            <el-input :spellcheck="false"  id="register-repeat-password" show-password type="password" minlength=6 maxlength=20
               v-model.trim="formData.checkPass" autocomplete="off"></el-input>
           </div>
 
@@ -28,7 +28,7 @@
           <div>
             <div class="form-input">
               <label for="register-verification-code">Verification Code</label>
-              <el-input id="register-verification-code" v-model="formData.verificationCode" autocomplete="off"></el-input>
+              <el-input :spellcheck="false"  id="register-verification-code" v-model="formData.verificationCode" autocomplete="off"></el-input>
             </div>
           </div>
         </el-form-item>
@@ -86,7 +86,8 @@ const sendVerificationCode = async (form: FormInstance | undefined) => {
   if (isValid) {
     let res = (await HandleSendVerificationCode({
       email: formData.email,
-      password: formData.password
+      password: formData.password,
+      type:'1'//注册
     }))
     if (res.success) {
       ElNotification({

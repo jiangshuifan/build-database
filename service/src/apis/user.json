@@ -39,5 +39,13 @@
     "requiredParams": [],
     "desc": "退出登录",
     "validateToken": false
+  },
+  {
+    "api": "resetPassword",
+    "path": "resetpassword",
+    "allParams": [],
+    "requiredParams": [],
+    "desc": "重置密码",
+    "validateToken": false
   }
 ]
